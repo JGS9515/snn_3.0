@@ -1,4 +1,6 @@
 *.pyc
+Nuevo_dataset/
+venv/
 resultados/
 wandb/
 
