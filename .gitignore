@@ -1,0 +1,16 @@
+*.pyc
+resultados/
+wandb/
+
+preprocesamiento/CalIt2/__pycache__
+preprocesamiento/CalIt2/__pycache__/CalIt2_check_every_row_is_repeated_2_times.cpython-310.pyc
+preprocesamiento/CalIt2/__pycache__/CalIt2_fill_label_field.cpython-310.pyc
+preprocesamiento/CalIt2/__pycache__/CalIt2_fill_missing_timestamps.cpython-310.pyc
+preprocesamiento/CalIt2/__pycache__/CalIt2_transform_date_to_timestamp.cpython-310.pyc
+preprocesamiento/CalIt2/__pycache__/CalIt2_transform_event_time_windows_to_timestamp.cpython-310.pyc
+*.gz
+FashionMNIST/raw/t10k-images-idx3-ubyte
+FashionMNIST/raw/t10k-labels-idx1-ubyte
+FashionMNIST/raw/train-images-idx3-ubyte
+FashionMNIST/raw/train-labels-idx1-ubyte
+*.pyc
