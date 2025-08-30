@@ -5,13 +5,15 @@ from bindsnet.network.monitors import Monitor
 import torch, pandas as pd, numpy as np, os
 from bindsnet.learning import PostPre
 import torch.nn.functional as F
-from sklearn.metrics import f1_score, mean_squared_error, precision_score, recall_score
+from sklearn.metrics import f1_score, mean_squared_error, precision_score, recall_score, roc_auc_score, roc_curve, precision_recall_curve, auc, confusion_matrix, classification_report
 from datetime import datetime
 import os
 import json
 # import wandb
 # from wandb_utils import log_evaluation_results
 import matplotlib.pyplot as plt
+from scipy.stats import norm
+from scipy.ndimage import gaussian_filter1d
 
 
 def reset_voltajes(network, device='cpu'):
@@ -19,55 +21,109 @@ def reset_voltajes(network, device='cpu'):
     return network
 
 
-def dividir(data,minimo):
-    #Función que divide los datos de entrenamiento, para considerar aisladamente cada subsecuencia de datos normales.
-    #Tomamos los intervalos:
+def dividir(data, minimo):
+    """
+    Enhanced function to divide training data into normal subsequences.
+    Improved temporal sequence handling with better validation.
+    """
+    print(f"Dividing data into sequences of minimum length {minimo}")
+
     intervals = []
     in_sequence = False
-    
-    #Iteramos para identificar los intervalos:
+    sequence_start = None
+
+    # Enhanced interval identification with validation
     for i in range(len(data)):
-        if data.loc[i, 'label'] == 0:
-            if not in_sequence:
-                start_idx = i
-                in_sequence = True
-            end_idx = i+1
-        else:
-            if in_sequence:
-                intervals.append((start_idx, end_idx))
-                in_sequence = False
-    
-    # Agrega la posición del último elemento de los datos de entrada:
+        current_label = data.loc[i, 'label']
+
+        # Start of normal sequence
+        if current_label == 0 and not in_sequence:
+            sequence_start = i
+            in_sequence = True
+
+        # End of normal sequence
+        elif current_label != 0 and in_sequence:
+            intervals.append((sequence_start, i))
+            in_sequence = False
+
+    # Handle case where sequence goes to end of data
     if in_sequence:
-        intervals.append((start_idx, end_idx))
-    
-    #Creamos un dataframe con los intervalos encontrados:
+        intervals.append((sequence_start, len(data)))
+
+    print(f"Found {len(intervals)} normal sequences")
+
+    # Create DataFrame with intervals
     intervals_df = pd.DataFrame(intervals, columns=['inicio', 'final'])
-    
-    subs=[]
-    #Iteramos para dividir:
-    for i,row in intervals_df.iterrows():
-        inicio_tmp=row['inicio']
-        final_tmp=row['final']
-        if final_tmp-inicio_tmp>=minimo:
-            subs.append(data.iloc[inicio_tmp:final_tmp].reset_index(drop=True))
-    
+
+    subs = []
+    total_valid_sequences = 0
+    total_samples = 0
+
+    # Enhanced sequence extraction with more flexible validation
+    for i, row in intervals_df.iterrows():
+        inicio_tmp = int(row['inicio'])
+        final_tmp = int(row['final'])
+        sequence_length = final_tmp - inicio_tmp
+
+        if sequence_length >= minimo:
+            sequence_data = data.iloc[inicio_tmp:final_tmp].reset_index(drop=True)
+
+            # More flexible validation: allow sequences with some anomalies
+            normal_count = (sequence_data['label'] == 0).sum()
+            anomaly_count = (sequence_data['label'] == 1).sum()
+
+            # Accept sequences that have at least some normal samples and not too many anomalies
+            if normal_count >= max(10, sequence_length * 0.3):  # At least 30% normal or 10 samples
+                subs.append(sequence_data)
+                total_valid_sequences += 1
+                total_samples += sequence_length
+                print(f"  Sequence {i}: length {sequence_length}, normal: {normal_count}, anomalies: {anomaly_count}")
+            else:
+                print(f"  Sequence {i}: rejected (insufficient normal samples: {normal_count}/{sequence_length})")
+
+    print(f"Extracted {total_valid_sequences} valid sequences with {total_samples} total samples")
+    print(".2f")
+
     return subs
 
 
 def padd(data, T):
+    """
+    Enhanced padding function with better temporal handling
+    """
     lon = len(data)
-    # Calcular el múltiplo más cercano de T superior al número actual de filas
+
+    # If data length is already multiple of T, return as is
+    if lon % T == 0:
+        return data
+
+    # Calculate the next multiple of T
     lon2 = ((lon // T) + 1) * T
-    # Calcular el número de filas adicionales necesarias
     lon_adicional = lon2 - lon
-    
-    # Crear un DataFrame con filas adicionales llenas de NaN
+
     if lon_adicional > 0:
-        datanul = pd.DataFrame(np.nan, index=range(lon_adicional), columns=data.columns)
-        # Concatenar el DataFrame original con el DataFrame de padding
-        data = pd.concat([data, datanul], ignore_index=True)
-    
+        print(f"Padding {lon_adicional} samples to reach multiple of T={T}")
+
+        # Create padding data with replication of last valid values
+        # This maintains temporal continuity better than NaN padding
+        if len(data) > 0:
+            # Use the last row as template for padding
+            last_row = data.iloc[-1:].copy()
+
+            # Create padding rows by replicating the last valid row
+            padding_rows = []
+            for i in range(lon_adicional):
+                new_row = last_row.copy()
+                # Mark as padded data (optional: could add a padding flag)
+                padding_rows.append(new_row)
+
+            padding_df = pd.concat(padding_rows, ignore_index=True)
+            data = pd.concat([data, padding_df], ignore_index=True)
+        else:
+            # Fallback to NaN padding if no data exists
+            padding_df = pd.DataFrame(np.nan, index=range(lon_adicional), columns=data.columns)
+            data = pd.concat([data, padding_df], ignore_index=True)
+
     return data
 
 
@@ -139,11 +195,17 @@ def create_gaussian_kernel(kernel_size=5, sigma=1.0, device='cpu'):
     return gaussian.view(1, 1, -1)  # Shape for 1D convolution
 
 
-# Improved function with more kernel options
+# Enhanced function with improved kernel options and better parameter handling
 def create_kernel(kernel_type='gaussian', kernel_size=5, sigma=1.0, device='cpu'):
-    # Ensure kernel_size is an integer
+    # Ensure kernel_size is an integer and odd
     kernel_size = int(kernel_size)
-    
+    if kernel_size % 2 == 0:
+        kernel_size += 1  # Make it odd
+        print(f"Adjusted kernel_size to {kernel_size} (must be odd)")
+
+    # Ensure sigma is positive
+    sigma = max(0.1, float(sigma))
+
     if kernel_type == 'gaussian':
         x = torch.linspace(-kernel_size//2, kernel_size//2, kernel_size, device=device)
         kernel = torch.exp(-x**2 / (2*sigma**2))
@@ -155,10 +217,26 @@ def create_kernel(kernel_type='gaussian', kernel_size=5, sigma=1.0, device='cpu'
         kernel = (1 - x**2 / sigma**2) * torch.exp(-x**2 / (2*sigma**2))
     elif kernel_type == 'box':
         kernel = torch.ones(kernel_size, device=device)
+    elif kernel_type == 'exponential':
+        x = torch.linspace(0, kernel_size-1, kernel_size, device=device)
+        kernel = torch.exp(-x / sigma)
+    elif kernel_type == 'difference_of_gaussians':
+        x = torch.linspace(-kernel_size//2, kernel_size//2, kernel_size, device=device)
+        kernel1 = torch.exp(-x**2 / (2*sigma**2))
+        kernel2 = torch.exp(-x**2 / (2*(sigma*2)**2))
+        kernel = kernel1 - 0.5 * kernel2
     else:
-        raise ValueError(f"Unknown kernel type: {kernel_type}")
-    
-    kernel = kernel / kernel.sum()  # Normalize
+        raise ValueError(f"Unknown kernel type: {kernel_type}. Available: gaussian, laplacian, mexican_hat, box, exponential, difference_of_gaussians")
+
+    # Ensure kernel sums to positive value before normalization
+    kernel_sum = kernel.sum()
+    if kernel_sum > 0:
+        kernel = kernel / kernel_sum
+    else:
+        # Fallback to uniform kernel if sum is zero or negative
+        print(f"Warning: Kernel sum is {kernel_sum}, using uniform kernel")
+        kernel = torch.ones(kernel_size, device=device) / kernel_size
+
     return kernel.view(1, 1, -1)  # Shape for 1D convolution
 
 
@@ -203,12 +281,32 @@ def crear_red(snn_input_layer_neurons_size, decaimiento, umbral, nu1, nu2, n, T,
         
         try:
             print("Creating basic connections...")
-            # Create connections with integer dimensions
+            print(f"Input layer size: {snn_input_layer_neurons_size}, Hidden layer size: {n}")
+
+            # Create connections with improved initialization for better learning
+            # Use Xavier/Glorot initialization for better gradient flow
+            scale_factor = np.sqrt(2.0 / (snn_input_layer_neurons_size + n))  # Xavier initialization
+            base_weight = scale_factor * torch.randn(snn_input_layer_neurons_size, n)
+
+            print(f"Initial weight scale factor: {scale_factor:.4f}")
+            print(f"Weight matrix shape: {base_weight.shape}")
+
+            # Add small positive bias to encourage initial spiking
+            base_weight = base_weight + 0.1
+
+            # Apply moderate L2 regularization
+            weight_norm = torch.norm(base_weight)
+            print(f"Weight norm before regularization: {weight_norm:.4f}")
+
+            if weight_norm > 1.0:  # Only scale down if too large
+                base_weight = base_weight * (1.0 / weight_norm)
+                print(f"Applied regularization, new norm: {torch.norm(base_weight):.4f}")
+
             forward_connection = Connection(
                 source=source_layer,
                 target=target_layer,
-                w=(0.3 + 0.2 * torch.randn(snn_input_layer_neurons_size, n)).to(device),
-                update_rule=PostPre, 
+                w=base_weight.to(device),
+                update_rule=PostPre,
                 nu=nu1
             ).to(device)
             print("Created forward connection")
@@ -216,11 +314,31 @@ def crear_red(snn_input_layer_neurons_size, decaimiento, umbral, nu1, nu2, n, T,
             network.add_connection(connection=forward_connection, source="A", target="B")
             print("Added forward connection to network")
             
+            # Improved recurrent connections for better temporal dynamics
+            # Start with a more balanced recurrent structure
+            recurrent_weights = 0.05 * torch.randn(n, n)  # Random initialization
+
+            # Add structured connectivity: local connections with decay
+            for i in range(n):
+                for j in range(max(0, i-5), min(n, i+6)):  # Local connectivity window
+                    if i != j:  # Avoid self-connections
+                        distance = abs(i - j)
+                        weight_value = 0.02 * np.exp(-distance * 0.5)  # Exponential decay
+                        recurrent_weights[i, j] = weight_value
+
+            # Add small inhibitory bias
+            recurrent_weights = recurrent_weights - 0.01
+
+            # Apply moderate regularization
+            recurrent_norm = torch.norm(recurrent_weights)
+            if recurrent_norm > 2.0:  # More lenient threshold
+                recurrent_weights = recurrent_weights * (2.0 / recurrent_norm)
+
             recurrent_connection = Connection(
                 source=target_layer,
                 target=target_layer,
-                w=(0.025 * (torch.eye(n) - 1)).to(device), 
-                update_rule=PostPre, 
+                w=recurrent_weights.to(device),
+                update_rule=PostPre,
                 nu=nu2
             ).to(device)
             print("Created recurrent connection")
@@ -288,14 +406,34 @@ def crear_red(snn_input_layer_neurons_size, decaimiento, umbral, nu1, nu2, n, T,
                 print(f"Final weights shape: {weights.shape}")
                 
                 print("Creating convolutional connections...")
-                # Create connections with explicit float conversion for norm
-                norm_value = float(norm_factor) * float(kernel_size)  # Explicit float conversion
+                # Create connections with improved normalization and learning
+                # More aggressive normalization for better signal propagation
+                norm_value = float(norm_factor) * float(kernel_size) * 2.0  # Increased multiplier
                 print(f"Using norm value: {norm_value}")
-                
+
                 # Convert nu2 to float if it's a tuple
                 nu2_value = float(nu2[0] if isinstance(nu2, tuple) else nu2)
                 print(f"Using nu2 value: {nu2_value}")
-                
+
+                # Ensure weights have sufficient magnitude for learning
+                weight_scale = torch.norm(weights)
+                target_scale = 0.5  # Target scale for good learning
+
+                if weight_scale < 0.1:  # If weights are too small, scale them up significantly
+                    scale_factor = target_scale / max(weight_scale, 1e-6)
+                    weights = weights * scale_factor
+                    print(f"Scaled up conv weights by factor: {scale_factor:.3f} (was {weight_scale:.6f})")
+                elif weight_scale > 2.0:  # If weights are too large, scale them down
+                    scale_factor = target_scale / weight_scale
+                    weights = weights * scale_factor
+                    print(f"Scaled down conv weights by factor: {scale_factor:.3f} (was {weight_scale:.6f})")
+
+                # Add small random noise to prevent symmetric weights
+                noise_scale = 0.05
+                weights = weights + noise_scale * torch.randn_like(weights)
+
+                print(f"Final conv weights scale: {torch.norm(weights):.4f}")
+
                 conv_connection = Connection(
                     source=target_layer,
                     target=conv_layer,
@@ -308,13 +446,24 @@ def crear_red(snn_input_layer_neurons_size, decaimiento, umbral, nu1, nu2, n, T,
                 network.add_connection(conv_connection, "B", "C")
                 print("Added conv connection to network")
                 
-                # Feedback connection with explicit float conversion
+                # Enhanced feedback connection for better layer communication
+                feedback_weights = 0.2 * torch.randn(n, n, device=device)  # Increased base scale
+
+                # Add structured feedback: stronger self-connections and local connections
+                feedback_weights = feedback_weights + 0.1 * torch.eye(n, device=device)  # Stronger diagonal
+
+                # Add local connectivity pattern in feedback
+                for i in range(n):
+                    for j in range(max(0, i-3), min(n, i+4)):  # Smaller local window
+                        if i != j:
+                            feedback_weights[i, j] += 0.05
+
                 feedback_connection = Connection(
                     source=conv_layer,
                     target=target_layer,
-                    w=0.05 * torch.randn(n, n, device=device),
+                    w=feedback_weights,
                     update_rule=PostPre,
-                    nu=nu2_value * 0.5  # Use the float value instead of tuple
+                    nu=nu2_value * 0.8  # Slightly higher learning rate for feedback
                 ).to(device)
                 
                 network.add_connection(feedback_connection, "C", "B")
@@ -501,11 +650,28 @@ def guardar_resultados(spikes, spikes_conv, data_test, n, snn_input_layer_neuron
     binary_predictions_B = (spikes_1d > 0).astype(float)
     predicted_anomalies_B = np.nan_to_num(binary_predictions_B, nan=0.0)
     
-    # Calculate metrics for layer B
+    # Enhanced metrics calculation for layer B
     mse_B = mean_squared_error(ground_truth_labels, predicted_anomalies_B)
-    f1_B = f1_score(ground_truth_labels, predicted_anomalies_B)
-    precision_B = precision_score(ground_truth_labels, predicted_anomalies_B)
-    recall_B = recall_score(ground_truth_labels, predicted_anomalies_B)
+    f1_B = f1_score(ground_truth_labels, predicted_anomalies_B, zero_division=0)
+    precision_B = precision_score(ground_truth_labels, predicted_anomalies_B, zero_division=0)
+    recall_B = recall_score(ground_truth_labels, predicted_anomalies_B, zero_division=0)
+
+    # Additional metrics for layer B
+    try:
+        auc_B = roc_auc_score(ground_truth_labels, spikes_1d)
+        fpr_B, tpr_B, _ = roc_curve(ground_truth_labels, spikes_1d)
+        precision_curve_B, recall_curve_B, _ = precision_recall_curve(ground_truth_labels, spikes_1d)
+        auc_pr_B = auc(recall_curve_B, precision_curve_B)
+    except Exception as e:
+        print(f"Warning: Could not calculate AUC for layer B: {e}")
+        auc_B = auc_pr_B = 0.5
+        fpr_B = tpr_B = precision_curve_B = recall_curve_B = np.array([])
+
+    # Confusion matrix for layer B
+    cm_B = confusion_matrix(ground_truth_labels, predicted_anomalies_B)
+
+    # Classification report for layer B
+    report_B = classification_report(ground_truth_labels, predicted_anomalies_B, output_dict=True, zero_division=0)
     
     # Save binary predictions for layer B
     np.savetxt(f'{base_path}/spikes_1d_B', spikes_1d, delimiter=',')
@@ -521,11 +687,28 @@ def guardar_resultados(spikes, spikes_conv, data_test, n, snn_input_layer_neuron
         binary_predictions_C = (spikes_conv_1d > 0).astype(float)
         predicted_anomalies_C = np.nan_to_num(binary_predictions_C, nan=0.0)
         
-        # Calculate metrics for layer C
+        # Enhanced metrics calculation for layer C
         mse_C = mean_squared_error(ground_truth_labels, predicted_anomalies_C)
-        f1_C = f1_score(ground_truth_labels, predicted_anomalies_C)
-        precision_C = precision_score(ground_truth_labels, predicted_anomalies_C)
-        recall_C = recall_score(ground_truth_labels, predicted_anomalies_C)
+        f1_C = f1_score(ground_truth_labels, predicted_anomalies_C, zero_division=0)
+        precision_C = precision_score(ground_truth_labels, predicted_anomalies_C, zero_division=0)
+        recall_C = recall_score(ground_truth_labels, predicted_anomalies_C, zero_division=0)
+
+        # Additional metrics for layer C
+        try:
+            auc_C = roc_auc_score(ground_truth_labels, spikes_conv_1d)
+            fpr_C, tpr_C, _ = roc_curve(ground_truth_labels, spikes_conv_1d)
+            precision_curve_C, recall_curve_C, _ = precision_recall_curve(ground_truth_labels, spikes_conv_1d)
+            auc_pr_C = auc(recall_curve_C, precision_curve_C)
+        except Exception as e:
+            print(f"Warning: Could not calculate AUC for layer C: {e}")
+            auc_C = auc_pr_C = 0.5
+            fpr_C = tpr_C = precision_curve_C = recall_curve_C = np.array([])
+
+        # Confusion matrix for layer C
+        cm_C = confusion_matrix(ground_truth_labels, predicted_anomalies_C)
+
+        # Classification report for layer C
+        report_C = classification_report(ground_truth_labels, predicted_anomalies_C, output_dict=True, zero_division=0)
         
         # Save binary predictions for layer C
         np.savetxt(f'{base_path}/spikes_1d_C', spikes_conv_1d, delimiter=',')
@@ -573,22 +756,45 @@ def guardar_resultados(spikes, spikes_conv, data_test, n, snn_input_layer_neuron
     with open(f'{base_path}/Recall_capa_B', 'w') as f:
         f.write(f'{recall_B}\n')
         
-    # Create config JSON with all metrics
+    # Enhanced config JSON with comprehensive metrics
     info = {
+        # Network parameters
         "nu1": trial.params['nu1'],
         "nu2": trial.params['nu2'],
         "threshold": trial.params['threshold'],
         "decay": trial.params['decay'],
+        "snn_input_layer_neurons_size": snn_input_layer_neurons_size,
+        "snn_process_layer_neurons_size": snn_process_layer_neurons_size,
+
+        # Layer B metrics
         "mse_B": mse_B,
         "f1_B": f1_B,
         "precision_B": precision_B,
         "recall_B": recall_B,
+        "auc_B": auc_B,
+        "auc_pr_B": auc_pr_B,
+        "confusion_matrix_B": cm_B.tolist(),
+        "classification_report_B": report_B,
+
+        # Layer C metrics (if available)
         "mse_C": mse_C,
         "f1_C": f1_C,
         "precision_C": precision_C,
         "recall_C": recall_C,
-        "ssn_input_layer_neurons_size": snn_input_layer_neurons_size,
-        "snn_process_layer_neurons_size": snn_process_layer_neurons_size,    
+        "auc_C": auc_C if 'auc_C' in locals() else None,
+        "auc_pr_C": auc_pr_C if 'auc_pr_C' in locals() else None,
+        "confusion_matrix_C": cm_C.tolist() if 'cm_C' in locals() else None,
+        "classification_report_C": report_C if 'report_C' in locals() else None,
+
+        # Best combined metrics
+        "best_f1": max(f1_B, f1_C) if f1_C is not None else f1_B,
+        "best_layer": "C" if (f1_C is not None and f1_C > f1_B) else "B",
+
+        # Dataset statistics
+        "anomaly_ratio": np.mean(ground_truth_labels),
+        "total_samples": len(ground_truth_labels),
+        "anomaly_samples": int(np.sum(ground_truth_labels)),
+        "normal_samples": int(len(ground_truth_labels) - np.sum(ground_truth_labels))
     }
     
     with open(f"{base_path}/config.json", "w") as f:
