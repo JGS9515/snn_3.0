@@ -1,0 +1,145 @@
+\chapter{Conclusiones}
+Aquí añadimos las conclusiones del proyecto
+Trabajos futuros
+\section{???}
+
+\section{Resumen del trabajo desarrollado}
+% TODO: Redactar un párrafo sintético (8--10 líneas) que describa qué problema se abordó,
+% qué datasets se usaron (IOPS, CalIt2), qué arquitectura se propuso (SNN híbrida A--B--C con capa convolucional),
+% qué metodología de optimización (Optuna) y qué comparación se realizó (modelo previo + TSFEDL).
+Este Trabajo Fin de Máster ha abordado el problema de la detección de anomalías en series temporales univariadas/multivariadas mediante arquitecturas basadas en Redes Neuronales de Impulsos (SNN), proponiendo una extensión híbrida SNN-CNN optimizada automáticamente. 
+% TODO: Añadir menciones a preprocesamiento, cuantiles, expansión de etiquetas, criterios de evaluación (F1 como métrica principal).
+% TODO: Incluir una frase sobre la motivación energética y el vínculo con computación neuromórfica.
+
+\section{Grado de cumplimiento de los objetivos}
+% Reutilizar la lista de objetivos del Capítulo 2 y marcar su estado.
+\begin{table}[htbp]
+    \centering
+    \small
+    \begin{tabular}{p{0.62\textwidth}p{0.28\textwidth}}
+        \hline\hline
+        \textbf{Objetivo} & \textbf{Estado (Sí/Parcial/No)} \\
+        \hline
+        O1: Revisión bibliográfica de SNNs y detección de anomalías & % TODO 
+        O2: Diseño de arquitectura SNN optimizada/híbrida & % TODO 
+        O3: Implementación sostenible (eficiencia / sparsity) & % TODO 
+        O4: Validación experimental en datasets reales (IOPS, CalIt2) & % TODO 
+        O5: Comparación con modelos tradicionales / TSFEDL & % TODO 
+        O6: Optimización automatizada (Optuna sobre hiperparámetros) & % TODO 
+        % Añadir otros si hubo (p.ej. integración MLOps con W\&B)
+        \hline\hline
+    \end{tabular}
+    \caption{Resumen del grado de cumplimiento de los objetivos planteados.}
+    \label{tab:objetivos-cumplimiento}
+\end{table}
+
+Comentarios:
+\begin{itemize}
+    \item \textbf{O más destacado}: % TODO
+    \item \textbf{Objetivo parcialmente cumplido}: % TODO (explicar causa, p.ej. limitación hardware/tiempo).
+    \item Acciones compensatorias: % TODO
+\end{itemize}
+
+\section{Principales contribuciones}
+% Lista breve de aportaciones técnicas / metodológicas.
+\begin{enumerate}
+    \item Propuesta e implementación de una arquitectura híbrida SNN-CNN con capa convolucional parametrizable (kernels gaussiano, laplaciano, mexican hat, box) y modos de fusión (direct, weighted\_sum, max).
+    \item Integración de estrategia sistemática de optimización bayesiana (Optuna TPE) sobre parámetros neuronales (threshold, decay) y de plasticidad (nu1, nu2), así como parámetros de la capa convolucional.
+    \item Pipeline de preprocesamiento reproducible: cuantización dinámica por cuantiles expandidos (parámetros \(a\), \(r\)), expansión de etiquetas (\texttt{expansion}) para mejorar cobertura de eventos anómalos y segmentación temporal en ventanas de longitud \(T\).
+    \item Comparativa empírica contra el modelo base (SNN A--B) y contra baselines de \texttt{TSFEDL} mostrando \textit{[TODO: síntesis de mejora en F1 / eficiencia]}.
+    \item Esquema analítico preliminar de complejidad computacional (estimación de MACs bajo supuesto de sparsity), sentando bases para evaluación energética futura en hardware neuromórfico.
+    \item Integración de experiment tracking con Weights \& Biases y almacenamiento estructurado de configuraciones (\texttt{best\_config.json}) para reproducibilidad.
+\end{enumerate}
+
+\section{Discusión de resultados}
+% TODO: Sintetizar tendencias mostradas en el Capítulo 5.
+Los resultados obtenidos evidencian que:
+\begin{itemize}
+    \item La capa convolucional aporta \textit{[TODO: mejora media F1 \% / reducción de falsos negativos / etc.]} respecto a la SNN base.
+    \item El modo de procesamiento \textit{[TODO: direct / weighted\_sum / max]} ofrece el mejor compromiso precisión/recall en \textit{[dataset X]}.
+    \item Los parámetros \texttt{threshold} y \texttt{decay} emergen como los más influyentes (según importancia de Optuna), seguidos de \texttt{kernel\_size} y \texttt{sigma}.
+    \item \textit{[TODO: desempeño relativo frente a modelo TSFEDL específico (ej. LSTM, TCN, Autoencoder)].}
+\end{itemize}
+
+\subsection{Interpretación técnica}
+% TODO: Explicar por qué ciertos kernels funcionaron mejor (suavizado vs detección de bordes).
+Los patrones observados en la selección de kernels sugieren que \textit{[TODO: p.ej. el kernel gaussiano permitió atenuar ruido impulsivo, mientras que mexican hat mejoró contraste en transitorios]}.
+
+\subsection{Implicaciones prácticas}
+% TODO: Aplicaciones reales (mantenimiento predictivo, monitorización IoT).
+El modelo híbrido es aplicable a escenarios de edge computing al reducir cómputo mediante sparsity, siempre que se complemente con:
+\begin{itemize}
+    \item Módulos ligeros de post-procesado para consolidar alertas.
+    \item Ajustes de umbrales adaptativos según distribución reciente de actividad neuronal.
+\end{itemize}
+
+\section{Limitaciones y amenazas a la validez}
+\subsection{Limitaciones experimentales}
+\begin{itemize}
+    \item \textbf{Particionado 50/50}: Falta de validación cruzada temporal podría introducir sesgos en generalización.
+    \item \textbf{Estimación energética indirecta}: No se dispuso de medición real de consumo en hardware neuromórfico (solo estimaciones analíticas de MACs).
+    \item \textbf{Escalabilidad multivariante}: Experimentos centrados principalmente en señales univariadas (o pocas variables); falta evaluación en entornos fuertemente multivariados.
+    \item \textbf{Número de trials}: \textit{[TODO: indicar n\_trials medio]} puede ser insuficiente para explorar completamente el espacio hiperparamétrico.
+    \item \textbf{GPU}: Uno de los motivos para seleccionar \texttt{BindsNET} fue la posibilidad de aprovechar aceleración GPU; sin embargo, la imposibilidad de disponer de una configuración estable de dicha aceleración (incompatibilidades de dependencias en Windows) incrementó la duración de los entrenamientos y restringió la amplitud de la exploración de hiperparámetros. Esto podría implicar que combinaciones óptimas no hayan sido completamente identificadas. No obstante, dado que todos los modelos se ejecutaron bajo condiciones homogéneas (CPU) y que el preprocesamiento fue uniforme, la validez interna de la comparación se mantiene. Futuros trabajos sobre un entorno Linux con soporte CUDA habilitado permitirán ampliar la búsqueda y evaluar la robustez frente a una exploración más exhaustiva.
+\end{itemize}
+
+\subsection{Amenazas a la validez}
+\begin{itemize}
+    \item \textbf{Interna}: Expansión de etiquetas podría inflar artificialmente el recall si no se aplica consistentemente en inferencia.
+    \item \textbf{Externa}: Datasets (IOPS, CalIt2) pueden no representar toda la diversidad industrial (ciclos estacionales largos, variabilidad contextual).
+    \item \textbf{Constructo}: Uso de F1 como métrica principal ignora costo desigual de FP vs FN en ciertos dominios (seguridad vs disponibilidad).
+    \item \textbf{Conclusión}: Comparaciones con TSFEDL limitadas a \textit{[TODO: especificar modelos realmente usados]}.
+\end{itemize}
+
+\section{Conclusiones finales}
+% TODO: 2–3 párrafos cerrando el trabajo y conectando con motivación inicial.
+En síntesis, la arquitectura híbrida SNN-CNN optimizada demuestra \textit{[TODO: p.ej. capacidad competitiva en F1]} al tiempo que mantiene un perfil computacional teóricamente eficiente derivado de la sparsity inherente a las SNNs. 
+% TODO: Destacar viabilidad para despliegue en escenarios con restricciones energéticas y utilidad de Optuna para parametrización fina.
+Estos hallazgos apoyan la hipótesis de que la integración de mecanismos convolucionales y optimización sistemática reduce la brecha entre SNN y enfoques ANN tradicionales para detección de anomalías en series temporales.
+
+\section{Trabajos futuros}
+% Estructurar en líneas de investigación priorizadas.
+\subsection{Optimización técnica}
+\begin{itemize}
+    \item \textbf{Validación cruzada temporal}: Implementar estrategias como rolling-origin o nested backtesting para robustecer la estimación de generalización.
+    \item \textbf{Multiobjetivo}: Extender la optimización con Optuna a objetivos conjuntos (F1 y coste computacional/MACs), empleando algoritmos como NSGA-II.
+    \item \textbf{Umbral adaptativo}: Introducir calibración dinámica (e.g. percentil 95 de actividad normal reciente) para reducir drift.
+    \item \textbf{Codificaciones alternativas}: Evaluar codificación por tasa vs. latencia vs. rank-order para mejorar discriminabilidad temprana.
+\end{itemize}
+
+\subsection{Ampliación de dominios y robustez}
+\begin{itemize}
+    \item Incorporar datasets multivariantes industriales (vibración, temperatura, presión) y comparar rendimiento frente a modelos de atención temporal.
+    \item Evaluar robustez frente a ruido sintético aditivo y drift de distribución (concept drift) aplicando técnicas de continual learning.
+    \item Analizar explicabilidad: mapear contribución de patrones de spikes a decisiones (saliency sobre tiempos).
+\end{itemize}
+
+\subsection{Evaluación energética y despliegue neuromórfico}
+\label{subsec:trabajo-futuro-neuromorfico}
+Una línea prioritaria consiste en la ejecución del modelo en hardware neuromórfico dedicado para validar empíricamente las estimaciones de eficiencia:
+\begin{itemize}
+    \item \textbf{Plataformas candidatas}: Intel Loihi 2, SpiNNaker 2, BrainScaleS-2, chips basados en memristores emergentes.
+    \item \textbf{Portado del modelo}: Conversión de parámetros LIF y topología a formato compatible (e.g. NxSDK / Lava para Loihi), sustituyendo operaciones convolucionales por proyecciones locales o \textit{compartment groups}.
+    \item \textbf{Métricas energéticas}: Joules por inferencia, mW promedio, latencia por ventana \(T\), escalabilidad en número de neuronas vs. consumo.
+    % \item \textbf{Procedimiento}: 
+    % \begin{enumerate}
+    %     \item Exportar pesos y kernels optimizados desde la versión PyTorch.
+    %     \item Mapear kernel 1D a conectividad local (ventanas deslizantes) usando bloques de proyección sobre neuronas receptoras en hardware.
+    %     \item Ejecutar baterías de inferencia con y sin eventos anómalos controlados para medir variación energética (baseline vs. carga activa).
+    % \end{enumerate}
+    % \item \textbf{Objetivo final}: Derivar curvas energía–rendimiento (Pareto) frente a ANN equivalentes y validar la hipótesis de ahorro (\(\times 10\)–\(\times 100\)) en entornos edge.
+\end{itemize}
+
+\subsection{Integración MLOps y ciclo de vida}
+\begin{itemize}
+    \item Versionado de datasets y features con herramientas como DVC.
+    \item Monitorización continua de drift y re-entrenamiento disparado por degradación de F1/recall.
+    \item Empaquetado en contenedores ligeros o despliegue sobre microcontroladores con toolchains específicos (TinyML + SNN surrogate).
+\end{itemize}
+
+\subsection{Líneas exploratorias adicionales}
+\begin{itemize}
+    \item \textbf{Aprendizaje supervisado híbrido}: Incorporar cabezas clasificadoras ANN ligeras sobre representaciones SNN para comparar supervisado vs. autoorganizado.
+    \item \textbf{Plasticidad avanzada}: Evaluar reglas triplet-STDP, homeostasis sináptica y modulación dopaminérgica para estabilizar el aprendizaje continuo.
+    \item \textbf{Reducción de dimensionalidad previa}: Análisis de PCA/autoencoders para reducir ruido antes de la codificación a spikes.
+\end{itemize}

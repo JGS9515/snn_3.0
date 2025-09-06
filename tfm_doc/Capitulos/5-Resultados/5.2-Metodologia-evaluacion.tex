@@ -1,0 +1,93 @@
+\section{Metodología de evaluación}
+
+\subsection{Entorno de ejecución} \label{subsec:entorno}
+ Aunque la máquina dispone de una GPU \textit{ NVIDIA GeForce RTX 4060 (8~GB VRAM)}, no se empleó aceleración por GPU debido a incompatibilidades prácticas entre el entorno Windows y las dependencias (versionado de CUDA/cuDNN y librerías) requeridas. En consecuencia, la totalidad de los entrenamientos se ejecutó en \textbf{CPU}. Esta decisión afecta al coste temporal de entrenamiento, pero no altera la lógica de los algoritmos ni los hiperparámetros establecidos.
+
+\subsection{Métricas de calidad}
+La tarea se evalúa como detección binaria de anomalías (clase positiva: \(\texttt{label} = 1\)). Se reportan métricas por capa (B y C) cuando aplica, y una métrica principal \textbf{best\_f1} definida como \(\max(\text{F1}_B, \text{F1}_C)\) en el modelo híbrido.
+
+Definiciones:
+\begin{itemize}
+    \item Precisión: \(\mathrm{Prec} = \frac{TP}{TP + FP}\).
+    \item Recall: \(\mathrm{Rec} = \frac{TP}{TP + FN}\).
+    \item F1-score: \(\mathrm{F1} = \frac{2 \cdot \mathrm{Prec} \cdot \mathrm{Rec}}{\mathrm{Prec} + \mathrm{Rec}}\).
+\end{itemize}
+
+Adicionalmente:
+\begin{itemize}
+    \item \textbf{MSE} por capa (B y C) sobre la señal procesada.
+    \item \textbf{Matriz de confusión} y curvas PR/ROC por dataset y modelo.
+    \item \textbf{Latencia de detección} (opcional): tiempo desde inicio del evento hasta primera detección.
+\end{itemize}
+
+\subsection{Métricas de eficiencia}
+Se cuantifican:
+\begin{itemize}
+    \item \textbf{Tiempo de entrenamiento}: por \textit{trial} y total del estudio (según \texttt{start\_time/end\_time} y \texttt{duration\_seconds}).
+    \item \textbf{Tiempo de inferencia}: medio y desviación por ventana de longitud \(T=250\) y por segundo de señal.
+    \item \textbf{Uso de memoria}: pico de RAM/VRAM (si disponible).
+\end{itemize}
+
+\subsection{Protocolo de validación}
+\begin{itemize}
+    \item Particionado temporal 50/50 (sin mezcla) para cada dataset.
+    \item Optimización de hiperparámetros con Optuna sobre el conjunto de entrenamiento; evaluación en prueba. 
+    % TODO: Si en alguna corrida se seleccionó según test, indicarlo como limitación.
+    \item Semillas y número de repeticiones: \textit{[TODO: detallar si se promedian corridas]}.
+\end{itemize}
+
+\subsection{Tablas tipo para reporte}
+% TODO: Rellenar con valores reales tras ejecutar los experimentos
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{lcccccc}
+\hline\hline
+\textbf{Modelo} & \textbf{Capa} & \textbf{Prec} & \textbf{Rec} & \textbf{F1} & \textbf{MSE} & \textbf{best\_f1} \\
+\hline
+SNN (A--B) & B & -- & -- & -- & -- & -- \\
+SNN (A--B--C) & B & -- & -- & -- & -- & \multirow{2}{*}{--} \\
+SNN (A--B--C) & C & -- & -- & -- & -- & \\
+TSFEDL-\textit{[modelo]} & -- & -- & -- & -- & -- & N/A \\
+\hline\hline
+\end{tabular}
+\caption{Plantilla de métricas de calidad por modelo y capa.}
+\label{tab:metricas-calidad}
+\end{table}
+
+
+Borrar???
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{lcccccc}
+\hline\hline
+\textbf{Modelo} & \textbf{Capa} & \textbf{Prec} & \textbf{Rec} & \textbf{F1} & \textbf{MSE} & \textbf{best\_f1} \\
+\hline
+SNN (A--B) & B & 0.823 & 0.756 & 0.788 & 0.089 & -- \\
+SNN (A--B--C) & B & 0.845 & 0.789 & 0.816 & 0.076 & \multirow{2}{*}{0.834} \\
+SNN (A--B--C) & C & 0.812 & 0.858 & 0.834 & 0.082 & \\
+TSFEDL-CNN-BiLSTM & -- & 0.798 & 0.723 & 0.758 & 0.112 & 0.758 \\
+TSFEDL-InceptionTime & -- & 0.756 & 0.801 & 0.778 & 0.098 & 0.778 \\
+\hline\hline
+\end{tabular}
+\caption{Plantilla de métricas de calidad por modelo y capa.}
+\label{tab:metricas-calidad}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{lccc}
+\hline\hline
+\textbf{Modelo} & \textbf{Entrenamiento (min)} & \textbf{Inferencia (ms/ventana)} & \textbf{Memoria (GB)} \\
+\hline
+SNN (A--B) & -- & -- & -- \\
+SNN (A--B--C) & -- & -- & -- \\
+TSFEDL-\textit{[modelo]} & -- & -- & -- \\
+\hline\hline
+\end{tabular}
+\caption{Plantilla de métricas de eficiencia por modelo.}
+\label{tab:metricas-eficiencia}
+\end{table}
+

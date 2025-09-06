@@ -1,0 +1,54 @@
+\section{Alcance}
+Los entregables y resultados que se esperan obtener de este trabajo son:
+\begin{itemize}
+    \item \textbf{Código fuente.}
+    \item \textbf{Modelos utilizados.}
+    \item \textbf{Resultados.} 
+    \item \textbf{Memoria.} Es el documento actual, que contiene el proceso de desarrollo del proyecto planteado a través de los objetivos, fundamentos, planificación, resultados y conclusiones obtenidas.
+\end{itemize}
+
+\section{Hipótesis y Restricciones}
+% \subsection{Hipótesis}
+% Para el cumplimiento de los objetivos planteados para este trabajo, se plantean las siguientes hipótesis que se someterán a prueba mediante los experimentos que se realicen:
+
+% \begin{itemize}
+%     \item \textbf{H1.} El uso de traducción automática de textos del español al inglés, seguido por la resolución de correferencias en inglés, permitirá obtener mejores resultados que la resolución directa en español, debido a la mayor madurez de herramientas en inglés.
+%     \item \textbf{H2.} La alineación de las correferencias extraídas en inglés hacia el texto original en español permitirá recuperar con precisión las menciones en español, minimizando las pérdidas semánticas en el proceso de traducción. 
+%     \item \textbf{H3.}  La calidad de la correferencia final en español estará directamente influenciada por la calidad del sistema de correferencia en inglés, siendo estas variables clave para la eficacia del sistema propuesto.
+% \end{itemize}
+
+\subsection{Restricciones}
+Las limitaciones que se presentan para comprobar la hipotesis de partida anterior pueden ser ser intelectuales, temporales o económicas y se presentan las principales a continuación:
+\begin{itemize}
+    \item \textbf{R1.} \textbf{La duración del proyecto:} Este proyecto debe regirse por el limite de tiempo de implican los 12 créditos ECTS de un Trabajo Fin de Máster (TFM), lo que implica un límite de dedicación de aproximadamente 300 horas.
+    \item \textbf{R2.} \textbf{Disponibilidad y calidad de datasets de mantenimiento predictivo:}La disponibilidad de conjuntos de datos reales y etiquetados para detección de anomalías en aplicaciones de mantenimiento predictivo es limitada. Los datasets públicos como \textbf{IOPS} y \textbf{CalIt2} utilizados en experiencias previas requieren preprocesamiento extensivo y pueden no representar completamente la diversidad de escenarios industriales reales.
+    \item \textbf{R3.} \textbf{Limitaciones en la evaluación de eficiencia energética:} La validación experimental de las ventajas energéticas de las SNNs frente a métodos tradicionales requiere hardware especializado neuromórfico o mediciones precisas de consumo energético que no estan disponibles en el entorno de desarrollo.
+    \item \textbf{R4.} \textbf{Complejidad en la optimización de hiperparámetros:} Los sistemas SNN presentan una sensibilidad particular a los hiperparámetros debido a la compleja dinámica temporal entre neuronas y impulsos. La optimización de estos parámetros mediante frameworks como Optuna requiere tiempo computacional considerable y está limitada por los recursos disponibles y el tiempo del proyecto.
+\end{itemize}
+
+\section{Descripción de la solución propuesta}
+
+Este trabajo propone el desarrollo y una serie de mejoras a un sistema de detección de anomalías en series temporales basado en Redes Neuronales de Impulsos (SNNs), a continuación se enumeran dichas mejoras:
+
+\begin{itemize}
+    \item Seleccionar Framework para el desarrollo de la mejora del modelo previo.
+    \item Incorporar una arquitectura híbrida que combina las ventajas de las capas convolucionales con la eficiencia energética inherente de las SNNs. Esta arquitectura híbrida SNN-CNN busca aprovechar la capacidad de extracción de características espaciales de las redes convolucionales junto con el procesamiento temporal asíncrono y la eficiencia energética de las SNNs. La capa convolucional que recibe las salidas de la Capa B y aplica un kernel para el filtrado convolucional de los impulsos.
+    \item Incorporar Optuna para obtener la mejor configución de cada modelo mediante la hiperparametrización.
+    \item Desarrollar algoritmos de preprocesamiento de los datos.
+    \item Evaluar comparando resultados con el modelo (sin la capa convolucional) y con modelos de la librería \textbf{TSFEDL} (Time Series Feature Extraction Deep Learning).
+
+\end{itemize}
+    % \item Primero, se realiza una \textbf{traducción automática al inglés} (mediante \textit{GoogleTranslator}). Una vez traducido, se aplica el modelo \textit{Coreferee} en inglés para detectar cadenas de correferencia. Estas cadenas se almacenan en una estructura organizada pensada para facilitar su posterior alineación.
+    % \item La segunda fase consiste en la \textbf{alineación y transferencia de las correferencias al español}. Para ello, se utilizan herramientas como \textit{Awesome-Align} (basado en \textit{mBERT}) para mapear las menciones detectadas en inglés con sus equivalentes en español. Este alineamiento se refuerza con reglas definidas para casos específicos como nombres propios, validación semántica de las traducciones y normalización ortográfica, mejorando la precisión de las entidades alineadas.
+
+
+% Finalmente, se construye un archivo \texttt{JSON} que contiene las cadenas de correferencias en español, lo cual permite analizar, visualizar y utilizar estas relaciones entre entidades en futuros trabajos de procesamiento del lenguaje natural. 
+% En la sección ~\ref{chap:5} se explica mas detalladamente la solución antes mencionada.
+% \section{Alternativas y viabilidades}
+% \section{Metodologia de desarrollo}
+% \section{Planificacion}
+% plazos, ver horas por creditos
+% \section{Presupuesto}
+% ingeniero
+% equipo
+% poner de donde se sacan los sueldos y los precios de hardware y software

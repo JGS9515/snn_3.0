@@ -1,0 +1,12 @@
+\section{Métodos de optimización y ajuste de hiperparámetros}
+\subsection{Enfoques clásicos y modernos de optimización}
+
+El panorama de optimización para sistemas de detección de anomalías ha evolucionado desde métodos simples de \textbf{búsqueda en cuadrícula} en los años 70 \cite{noauthor_adaptation_nodate} hasta sofisticados marcos de \textbf{optimización bayesiana} \cite{snoek_practical_2012}. La búsqueda en cuadrícula, aunque computacionalmente intensiva, proporcionó una exploración sistemática de espacios de hiperparámetros, pero sufrió problemas de escalado exponencial a medida que aumentaba la dimensionalidad. La introducción de la optimización bayesiana alrededor de 2012 revolucionó el ajuste de hiperparámetros al modelar el rendimiento de los algoritmos de aprendizaje como muestras de procesos gaussianos, permitiendo una exploración más eficiente de los espacios de parámetros \cite{noauthor_adaptation_nodate}.
+
+Los marcos de optimización bayesiana, implementada en frameworks como Optuna, han demostrado la capacidad de alcanzar o superar el nivel de optimización de expertos humanos para varios algoritmos, incluidos la asignación latente de Dirichlet, SVMs estructurados y redes neuronales convolucionales \cite{noauthor_adaptation_nodate}. Estos métodos tienen en cuenta los costos experimentales variables y aprovechan las capacidades de procesamiento paralelo, lo que los hace particularmente adecuados para modelos de aprendizaje profundo computacionalmente costosos utilizados en la detección de anomalías.
+
+
+
+\subsection{Optimización multiobjetivo en la detección de anomalías}
+
+Los enfoques contemporáneos abordan cada vez más la detección de anomalías como problemas de optimización multiobjetivo, como lo demuestra el enfoque de Series Temporales de Red Cooperativa (\textbf{CNTS}) \cite{yang_cnts_2023}. Este marco consta de componentes de detector y reconstructor que trabajan cooperativamente, donde el detector identifica directamente anomalías mientras que el reconstructor proporciona información de reconstrucción y actualiza el aprendizaje basado en retroalimentación anómala. Esta estrategia de solución cooperativa aborda las limitaciones de los métodos basados en reconstrucción tradicionales que a menudo son susceptibles a valores atípicos e ineficaces para modelar anomalías.

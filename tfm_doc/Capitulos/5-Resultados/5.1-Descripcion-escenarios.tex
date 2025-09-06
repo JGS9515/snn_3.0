@@ -1,0 +1,228 @@
+\section{Descripción de los escenarios experimentales}
+
+En este capítulo se presentan los escenarios, configuraciones y protocolos empleados para evaluar los modelos de detección de anomalías. Se comparan:
+\begin{itemize}
+    \item \textbf{SNN original (A--B)}: implementación base empleada en el trabajo previo.
+    \item \textbf{SNN híbrida (A--B--C)}: modelo propuesto con capa convolucional y búsqueda de hiperparámetros (script \texttt{javi/ejecutar\_experimento\_javi.py}).
+    \item \textbf{Baselines TSFEDL}: modelos seleccionados del repositorio \texttt{@JGS9515/compare\_to\_TSFEDL}\footnote{\url{https://github.com/JGS9515/compare_to_TSFEDL}}.
+\end{itemize}
+
+\subsection{Datasets y particionado}
+Se emplearon datasets públicos con etiquetas binarias (0: normal, 1: anomalía). Para cada uno:
+\begin{itemize}
+    \item \textbf{IOPS}: KPI de servicios (Input/Output Operations Per Second). 
+    \begin{itemize}
+        \item Observaciones: \textit{2.788.680 (26 archivos KPI)}.
+        \item Frecuencia de muestreo: \textit{1 minuto}.
+        \item Variables: \texttt{value}, \texttt{label}.
+        \item Porcentaje de positivos: \textit{1.92\%}.
+        \item Particionado: 50/50 temporal (primera mitad entrenamiento, segunda mitad prueba), preservando orden temporal para evitar fuga de información.
+    \end{itemize}
+    \item \textbf{CalIt2}: flujos de entrada/salida en el edificio CalIt2 (UCI).
+    \begin{itemize}
+        \item Observaciones: 10.080 (15 semanas, 48 intervalos/día).
+        \item Frecuencia de muestreo: 30 minutos.
+        \item Variables: \texttt{value} (univariado por flujo), \texttt{label}.
+        \item Porcentaje de positivos: \textit{24.80\%}.
+        \item Particionado: 50/50 temporal. 
+    \end{itemize}
+\end{itemize}
+
+Preprocesado común:
+\begin{itemize}
+    \item Tipado de columnas: \texttt{value} en \texttt{float64} y \texttt{label} en \texttt{Int64}.
+    \item Expansión de etiquetas en entrenamiento (\texttt{expansion = 100}) para mitigar desbalanceo temporal.
+    \item Cálculo de cuantiles sobre \textbf{train} únicamente: rango extendido con \texttt{a = 0{,}1} y resolución \texttt{r = 0{,}05}; determina \texttt{snn\_input\_layer\_neurons\_size}.
+    \item Segmentación en ventanas de longitud \texttt{T = 250} y \textit{padding} del conjunto de prueba.
+\end{itemize}
+
+\subsection{Configuración de hardware y software}
+\label{subsec:config_hw_sw}
+
+En este Trabajo Fin de Máster se han utilizado dos entornos de trabajo principales:  El \textbf{Proyecto SNN} (con dos variantes internas: SNN original (A–B) y SNN híbrida (A–B–C)) y \textbf{Baselines TSFEDL}.
+
+Ambos entornos no se unificaron deliberadamente debido a \textbf{incompatibilidades de versiones}, particularmente relacionadas con PyTorch, NumPy y Pandas. Intentar forzar una convergencia resultaba inviable no era posible encontrar una combinación de versiones que permitiera ejecutar simultáneamente ambos proyectos. A continuación se muestran las restricciones técnicas más relevantes:
+
+\begin{itemize}
+    \item \textbf{Restricción principal}: BindsNET 0.2.7 requiere una versión de PyTorch anterior a la 1.13, lo que lo hace incompatible con la versiones 2.x requeridas por TSFEDL.
+    \item \textbf{Efecto cadena}: librerías estrechamente ligadas, como \textit{Torchvision} y \textit{Lightning/torchmetrics}, demandan rangos de versiones distintos de \texttt{torch}, lo que agrava la incompatibilidad.
+    \item \textbf{Cambios estructurales}: tanto NumPy 2.x como Pandas 2.x introducen modificaciones internas que obligarían a un proceso de refactorización antes de poder migrar el entorno SNN de manera estable.
+\end{itemize}
+
+\subsubsection*{Hardware (común a todos los experimentos)}
+\begin{itemize}
+    \item \textbf{CPU}: Intel(R) Core(TM) i7-14700HX
+    \item \textbf{GPU}: NVIDIA GeForce RTX 4060 (8 GB VRAM)
+    \item \textbf{RAM}: 32 GB
+    \item \textbf{Sistema Operativo}: Microsoft Windows 11 Pro (Build 26100)
+    \item \textbf{Dispositivo de cómputo}: Seleccionable mediante parámetro \texttt{--device \{cpu|gpu\}}
+\end{itemize}
+
+\subsubsection*{Comparación de versiones de software}
+La Tabla~\ref{tab:comparativa_sw} resume las principales diferencias entre el entorno de TSFEDL y el del Proyecto SNN (aplicable a ambas variantes SNN: original y con capa convolucional).
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{lccc}
+\hline\hline
+\textbf{Librería} & \textbf{TSFEDL} & \textbf{Proyecto SNN} & \textbf{Observación} \\
+\hline
+Python        & 3.10.0     & 3.10.0     & Mismo \\
+PyTorch       & 2.7.1+cpu  & 1.11.0     & Diferencia mayor (API / backend) \\
+Torchvision   & --         & 0.12.0     & Sólo en SNN \\
+NumPy         & 2.1.3      & 1.23.5     & Diferencia relevante (cambios internos) \\
+Pandas        & 2.3.1      & 1.4.3      & Diferencia mayor (funciones depreciadas) \\
+Matplotlib    & --         & 3.5.2      & Sólo en SNN (núcleo) \\
+Scikit-learn  & --         & 1.1.1      & Sólo en SNN \\
+BindsNET      & --         & 0.2.7      & Específico SNN (requiere PyTorch 1.x) \\
+\hline\hline
+\end{tabular}
+\caption{Comparativa principal de versiones de software entre TSFEDL y Proyecto SNN.}
+\label{tab:comparativa_sw}
+\end{table}
+
+
+\subsubsection*{Librerías adicionales del Proyecto SNN}
+Además de las listadas en la tabla, el entorno SNN incluye:
+
+\begin{description}
+    \item[Aprendizaje Profundo / ML:] TensorFlow 2.19.0, Keras 3.10.0, PyTorch Lightning 2.5.2, Torchmetrics 1.7.4
+    \item[Visualización:] Matplotlib 3.9.3 (instalada adicionalmente), Pillow 11.0.0, OpenCV 4.10.0.84
+    \item[Procesamiento de datos:] SciPy 1.14.1, Scikit-image 0.24.0, NetworkX 3.4.2
+    \item[Monitoreo / Logging:] Weights \& Biases (wandb) 0.21.0, TensorBoard 2.19.0, TensorBoardX 2.6.2.2
+    \item[Utilidades:] Pytest 8.3.4, Rich 14.0.0, TQDM 4.67.1, Requests 2.32.3
+    \item[Dominio de señales:] ObsPy 1.4.2 (sísmica), WFDB 4.3.0 (biomédica), SoundFile 0.13.1 (audio)
+\end{description}
+
+
+\subsubsection*{Estrategia de gestión de entornos}
+Se emplearon entornos virtuales independientes utilizando \texttt{venv}. 
+
+% ======================== NUEVA SUBSECCIÓN METODOLOGÍA ========================
+\subsection{Diseño experimental de tamaños de capa y protocolo de optimización}
+\label{subsec:diseno-experimental-neuronas}
+
+Para evaluar el impacto del tamaño de la red sobre el equilibrio rendimiento--coste computacional en la arquitectura híbrida propuesta (Capa B recurrente LIF + Capa C convolucional adaptativa), se definió una rejilla escalonada de tamaños para las capas de procesamiento interno:
+\[
+N_B \in \{100, 200, 400\}, \quad N_C = N_B
+\]
+La elección de una progresión aproximadamente duplicativa (factor $\times 2$) se justifica por:
+
+\begin{enumerate}
+    \item \textbf{Cobertura de capacidad con pocos puntos:} Se obtiene un rango total de $4\times$ en número de neuronas con sólo tres configuraciones, reduciendo el número de escenarios a optimizar bajo restricciones temporales del TFM (R1) y de coste computacional (R4).
+    \item \textbf{Análisis de escalado:} La complejidad operacional estimada (ver ecuación de MACs en la Sección correspondiente) contiene un término dominante cuadrático en $N_B$ (por $N_B^2$ y el producto $N_A N_B$), permitiendo observar el cambio de régimen en coste con incrementos estructurados.
+    \item \textbf{Zona práctica de capacidad:} Valores por debajo de 100 neuronas tienden a infra-representar patrones temporales en secuencias con variabilidad contextual, mientras que superar 400 aumenta la latencia y memoria de monitores sin garantía de ganancias proporcionales en F1 dado el carácter univariante / baja dimensionalidad de entrada.
+    \item \textbf{Control de estabilidad dinámica:} Tamaños extremadamente grandes elevan el riesgo de configuraciones subóptimas (redes excesivamente silenciosas o saturadas) durante la fase temprana de la búsqueda bayesiana.
+\end{enumerate}
+
+\subsubsection{Protocolo de optimización de hiperparámetros}
+Para cada tamaño $N_B$ se ejecutaron \textbf{100 ensayos} (trials) de optimización con \textbf{Optuna} empleando:
+\begin{itemize}
+    \item Algoritmo \textbf{TPE} (Tree-structured Parzen Estimator) para búsqueda adaptativa en un espacio mixto continuo y categórico.
+    \item Mecanismo de poda \textbf{ASHA} (Asynchronous Successive Halving) para detener configuraciones no prometedoras tempranamente (mitigando el coste de redes silenciosas).
+    \item Métrica objetivo: Minimización de $-\max(F1_B, F1_C)$, priorizando la mejor sinergia entre la capa recurrente y la capa convolucional adaptativa.
+\end{itemize}
+
+\paragraph{Espacio de hiperparámetros} (ejemplo resumido):
+\begin{itemize}
+    \item Plasticidad STDP: $\nu_1, \nu_2 \in [-0.5, 0.5]$.
+    \item Dinámica LIF: \texttt{threshold} $\in [-65, -50]$, \texttt{decay} $\in [80, 150]$.
+    \item Kernel convolucional: tipo $\in \{\texttt{gaussian}, \texttt{laplacian}, \texttt{mexican\_hat}, \texttt{box}\}$, tamaño impar $\in \{3,5,7,9\}$, $\sigma \in [0.5, 3.0]$.
+    \item Normalización y balance: \texttt{norm\_factor} $\in [0.1,1.0]$, \texttt{exc\_inh\_balance} $\in [-0.3,0.3]$.
+    \item Modo de fusión de salidas: \texttt{direct}, \texttt{weighted\_sum}, \texttt{max}.
+\end{itemize}
+
+\paragraph{Justificación de 100 trials por configuración:}
+\begin{enumerate}
+    \item \textbf{Convergencia empírica de TPE:} Estudios de optimización muestran estabilización de mejoras marginales en intervalos de 50--150 evaluaciones en espacios de dimensión efectiva moderada \cite{bergstra_random_2012, akiba_optuna_2019}.
+    \item \textbf{Eficiencia con poda:} La integración de ASHA reduce el número de evaluaciones completas necesarias, redirigiendo recursos a configuraciones prometedoras \cite{li_system_2020, noauthor_efficient_2021}.
+    \item \textbf{Sensibilidad SNN:} En SNNs la interacción entre plasticidad y dinámica de fuga/umbral puede generar regiones amplias de bajo disparo; la poda acelera el descarte \cite{firmin_parallel_2024, parsa_bayesian-based_2019}.
+    \item \textbf{Equidad comparativa:} Mantener igual presupuesto de 100 trials por cada $N_B$ evita sesgos de sobre-optimización en redes mayores y permite comparar curvas rendimiento/coste de forma homogénea.
+    \item \textbf{Restricciones del proyecto:} 3 escalas de red $\times$ 100 trials = 300 ensayos nominales; con poda, el número de ejecuciones completas efectivas disminuye, manteniéndose dentro del límite temporal (R1) y computacional (R4).
+\end{enumerate}
+
+\subsubsection{Salida registrada por trial}
+Para cada ensayo se almacenaron: (i) hiperparámetros seleccionados, (ii) métricas $F1_B$, $F1_C$, $\max(F1_B,F1_C)$, (iii) tiempo de ejecución, (iv) identificador de trial y (v) semilla pseudoaleatoria (cuando aplica) para reproducibilidad.
+
+\subsubsection{Criterio de selección final}
+La configuración óptima por cada $N_B$ se define como aquella con mayor $\max(F1_B,F1_C)$ (equivalente a menor valor objetivo interno). Además, se conservó la traza de la curva de mejor valor acumulado (\emph{best-so-far}) para evidenciar la estabilización antes del trial 100.
+
+\subsubsection{Resumen estructurado}
+\begin{center}
+\begin{tabular}{lccc}
+\hline
+Parámetro & Config. 1 & Config. 2 & Config. 3 \\
+\hline
+$N_B = N_C$ & 100 & 200 & 400 \\
+Trials (TPE+ASHA) & 100 & 100 & 100 \\
+Métrica objetivo & \multicolumn{3}{c}{$-\max(F1_B,F1_C)$} \\
+Espacio kernel & \multicolumn{3}{c}{Tipos + tamaño (3--9) + $\sigma$ + balance} \\
+Plasticidad & \multicolumn{3}{c}{$\nu_1,\nu_2 \in [-0.5,0.5]$} \\
+Dinámica LIF & \multicolumn{3}{c}{threshold, decay} \\
+Fusión & \multicolumn{3}{c}{direct / weighted\_sum / max} \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsubsection{Síntesis}
+El diseño adopta un escalado mínimo pero informativo de capacidad (100–400 neuronas) y un presupuesto de 100 evaluaciones por escala sustentado por evidencia de convergencia de métodos bayesianos con poda. Esto habilita el análisis comparativo rendimiento / coste y prepara la extensión futura hacia hardware neuromórfico (ver Sección \ref{subsec:trabajo-futuro-neuromorfico}).
+
+% ======================== FIN NUEVA SUBSECCIÓN ========================
+
+% ---------------- NOTA SOBRE BIBLIOGRAFÍA ----------------
+% Asegúrate de incluir en tu .bib (o adaptar a claves ya existentes) las siguientes referencias si no están:
+% \cite{bergstra_random_2012, akiba_optuna_2019, li_system_2020, parsa_bayesian-based_2019, firmin_parallel_2024, noauthor_efficient_2021}
+% Algunas ya pueden corresponder a claves previas (p.ej. noauthor_optuna_nodate).
+
+\subsection{Hiperparámetros y estrategia de búsqueda}
+La SNN híbrida (A--B--C) se optimizó con Optuna (TPE) maximizando F1:
+\begin{itemize}
+    \item \textbf{Parámetros neuronales y STDP}:
+    \begin{itemize}
+        \item \texttt{nu1} \(\in [-0{,}5, 0{,}5]\)
+        \item \texttt{nu2} \(\in [-0{,}5, 0{,}5]\)
+        \item \texttt{threshold} \(\in [-65, -50]\)
+        \item \texttt{decay} \(\in [80, 150]\)
+    \end{itemize}
+    \item \textbf{Capa convolucional}:
+    \begin{itemize}
+        \item \texttt{kernel\_type \(\in\) \{gaussian, laplacian, mexican\_hat, box\}}
+        \item \texttt{kernel\_size \(\in\) \{3,5,7,9\}}
+        \item \texttt{sigma} \(\in [0{,}5, 3{,}0]\)
+        \item \texttt{norm\_factor} \(\in [0{,}1, 1{,}0]\)
+        \item \texttt{exc\_inh\_balance} \(\in [-0{,}3, 0{,}3]\)
+        \item \texttt{conv\_processing\_type} \(\in\) \{direct, weighted\_sum, max\}.
+    \end{itemize}
+    \item \textbf{Parámetros fijos}: 
+     \begin{itemize}
+        \item  \texttt{T = 250}
+        \item \texttt{expansion = 100}
+        \item \texttt{a = 0{,}1}
+        \item \texttt{r = 0{,}05}
+        \item \texttt{trials = 100}
+    \end{itemize}
+\end{itemize}
+
+
+\subsection{Resumen de configuraciones ensayadas. (POSIBLEMENTE LO VOY A BORRAR)}
+% TODO: Añadir filas con los experimentos reales
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{llcccccc}
+\hline\hline
+\textbf{ExpID} & \textbf{Modelo} & \textbf{Dataset} & \textbf{Kernel} & \textbf{K} & \(\sigma\) & \textbf{Proc} & \texttt{T} \\
+\hline
+E0 & SNN (A--B) & IOPS & -- & -- & -- & -- & 250 \\
+E1 & SNN (A--B--C) & IOPS & \textit{[TODO]} & \textit{[3/5/7/9]} & \textit{[TODO]} & \textit{[dir/ws/max]} & 250 \\
+E2 & TSFEDL-\textit{[modelo]} & IOPS & N/A & N/A & N/A & N/A & -- \\
+E3 & SNN (A--B) & CalIt2 & -- & -- & -- & -- & 250 \\
+E4 & SNN (A--B--C) & CalIt2 & \textit{[TODO]} & \textit{[3/5/7/9]} & \textit{[TODO]} & \textit{[dir/ws/max]} & 250 \\
+E5 & TSFEDL-\textit{[modelo]} & CalIt2 & N/A & N/A & N/A & N/A & -- \\
+\hline\hline
+\end{tabular}
+\caption{Resumen de configuraciones ensayadas. K: tamaño de kernel; Proc: modo de procesamiento (direct/weighted\_sum/max).}
+\label{tab:resumen-configuraciones}
+\end{table}

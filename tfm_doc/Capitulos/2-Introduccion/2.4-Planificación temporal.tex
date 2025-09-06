@@ -1,0 +1,42 @@
+\section{Planificación temporal}
+
+La asignación temporal de las tareas que componen este proyecto, reflejada en la Figura \ref{fig:Diagrama de Gantt}. La planificación es de carácter orientativo y puede estar sujeta a retrasos o modificaciones a medida que el proyecto progresa. Para la estimación de costes, se ha considerado una dedicación de 25 horas semanales, con un coste de 22.80€ por hora \cite{Talent.com_2024}.
+
+\subsection{Estimación temporal}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lcc}
+\hline \hline
+\textbf{Tarea} & \textbf{Duración (semanas)} & \textbf{Coste} \\
+\hline
+Revisión bibliográfica & 3 & 1.710,00€ \\
+Implementación de modelo híbrido SNN-CNN & 4 & 2.280,00€ \\
+Configuración de Framework BindsNET & 0,5 & 285,00€ \\
+Optimización de hiperparámetros con Optuna & 1,5 & 855,00€ \\
+Selección y preprocesamiento de datos & 2 & 1.140,00€ \\
+Experimentación y validación & 3 & 1.710,00€ \\
+Análisis comparativo de resultados & 2 & 1.140,00€ \\
+Documentación  & 2 & 1.140,00€ \\
+\hline
+\textbf{TOTAL} & \textbf{18} & \textbf{10.260,00€} \\
+\hline \hline
+\end{tabular}
+\caption{Planificación temporal de tareas, con duración estimada en semanas y coste asociado.}
+\label{tab:planificacion_tareas}
+\end{table}
+
+Inicialmente nos centraremos en realizar una \textbf{revisión bibliográfica} exhaustiva sobre las redes neuronales de impulsos (SNNs), especialmente su aplicación en la detección de anomalías y el mantenimiento predictivo. Este análisis nos permitirá identificar y seleccionar los enfoques y modelos más recientes y relevantes en el campo, así como determinar los métodos óptimos de optimización multiobjetivo y evaluación comparativa de eficiencia energética entre SNNs y modelos tradicionales.
+
+A continuación, se iniciará el \textbf{implementación de modelo híbrido SNN-CNN}, implementando mejoras como la capa convolucional adaptable y la \textbf{optimización de hiperparámetros mediante frameworks como Optuna}. Se prestará especial atención a la integración y \textbf{configuración del entorno de trabajo con BindsNET}.
+
+En paralelo se llevará a cabo la exploración y \textbf{selección de fuentes de datos}, poniendo especial énfasis en la disponibilidad y calidad de conjuntos como IOPS y CalIt2, que requieren pipelines de preprocesamiento específicos para su adecuada codificación temporal y tratamiento de valores faltantes. Esta etapa es crucial para asegurar que los datos sean adecuados para el entrenamiento eficiente y la validación precisa de los modelos de detección de anomalías.
+
+Una vez validados la arquitectura y el procesamiento de los datos, se lanzará la \textbf{fase de experimentación}, implementando escenarios controlados y métricas de evaluación que permitan comparar objetivamente el rendimiento y la eficiencia energética frente a modelos tradicionales. \textbf{Los resultados obtenidos se analizarán} en profundidad, documentando mejoras arquitecturales y trade-offs identificados, y generando visualizaciones comparativas.
+
+\begin{figure}[p] % [p] = colocar la figura en una página flotante propia
+    \centering
+    \includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio,angle=90]{Imagenes/Gantt.png}
+    \caption{Diagrama de Gantt del proyecto. Fuente: Elaboración propia.}
+    \label{fig:Diagrama de Gantt}
+\end{figure}

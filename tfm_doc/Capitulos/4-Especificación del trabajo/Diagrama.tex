@@ -1,0 +1,118 @@
+% ==== Diagrama de arquitectura del modelo híbrido SNN-CNN ====
+% Para ser incluido desde el documento principal con \input{Capitulos/4-Especificación del trabajo/Diagrama}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[scale=0.8]
+
+% Definiciones de colores específicas para el diagrama (manteniendo compatibilidad)
+\definecolor{EntradaColor}{rgb}{1,0.6,0.2}
+\definecolor{SNNColor}{rgb}{0.2,0.6,1}
+\definecolor{ConvColor}{rgb}{0.8,0.3,0.8}
+\definecolor{FusionColor}{rgb}{0.4,0.8,0.4}
+
+% Estilo de conexión personalizado (corregido para evitar conflictos)
+\tikzset{
+    conexion/.style={ultra thick, ->, >=stealth, opacity=0.8}
+}
+
+% === Caja A - Entrada (Codificación de cuantiles) ===
+\node[draw=black,
+      fill=EntradaColor,
+      minimum height=3cm,
+      minimum width=1.5cm,
+      rounded corners=3pt,
+      text width=1.3cm,
+      align=center] (A) at (0,0) {
+        \small\textbf{Entrada}\\[0.2cm]
+        \footnotesize Codificación\\
+        cuantiles\\[0.1cm]
+        \tiny N = len(cuantiles)-1\\
+        \tiny $\sim$64 neuronas
+};
+
+% === Caja B - Capa SNN (LIF + STDP) ===
+\node[draw=black,
+      fill=SNNColor,
+      minimum height=3.5cm,
+      minimum width=2cm,
+      rounded corners=3pt,
+      text width=1.8cm,
+      align=center] (B) at (4,0) {
+        \small\textbf{Capa B}\\[0.2cm]
+        \footnotesize SNN Base\\
+        \footnotesize LIF + Recurrente\\[0.1cm]
+        \tiny N = 100 neuronas\\
+        \tiny threshold $\in$ [-65,-50]\\
+        \tiny decay $\in$ [80,150]\\
+        \tiny STDP: nu1, nu2 $\in$ [-0.5,0.5]
+};
+
+% === Caja C - Capa Convolucional Híbrida ===
+\node[draw=black,
+      fill=ConvColor,
+      minimum height=3cm,
+      minimum width=2.2cm,
+      rounded corners=3pt,
+      text width=2cm,
+      align=center] (C) at (8,0) {
+        \small\textbf{Capa C}\\[0.2cm]
+        \footnotesize Conv. Híbrida\\
+        \footnotesize AdaptiveLIF\\[0.1cm]
+        \tiny N = 100 neuronas\\
+        \tiny kernel: Gaussian\\
+        \tiny size $\in$ [3,9], $\sigma$ $\in$ [0.5,3]\\
+        \tiny balance exc/inh
+};
+
+% === Bloque de Fusión y Decisión ===
+\node[draw=black,
+      fill=FusionColor,
+      minimum height=2cm,
+      minimum width=1.8cm,
+      rounded corners=3pt,
+      text width=1.6cm,
+      align=center] (Fusion) at (11,0) {
+        \small\textbf{Fusión}\\[0.2cm]
+        \footnotesize Modos:\\
+        \tiny $\bullet$ direct\\
+        \tiny $\bullet$ weighted\_sum\\
+        \tiny $\bullet$ max\\[0.1cm]
+        \footnotesize Optimización:\\
+        \tiny max(F1\_B, F1\_C)
+};
+
+% === Conexiones principales ===
+\draw[conexion] (A.east) -- (B.west) node[midway,above] {\footnotesize A$\rightarrow$B};
+\draw[conexion] (B.east) -- (C.west) node[midway,above] {\footnotesize B$\rightarrow$C};
+\draw[conexion] (C.east) -- (Fusion.west) node[midway,above] {\footnotesize C$\rightarrow$Fusión};
+
+% === Conexión de retroalimentación B->B (recurrente) ===
+\draw[conexion, dashed, bend left=60] (B.north east) to node[above] {\tiny recurrente} (B.north west);
+
+% === Conexión dual B->Fusión (para weighted_sum y max) ===
+\draw[conexion, bend right=20, opacity=0.6] (B.south) to node[below] {\tiny B$\rightarrow$Fusión} (Fusion.south west);
+
+% === Etiquetas de dominio ===
+\node[above=0.5cm of A] {\footnotesize \textbf{Dominio de Codificación}};
+\node[above=0.5cm of B] {\footnotesize \textbf{Dominio SNN}};
+\node[above=0.5cm of C] {\footnotesize \textbf{Dominio CNN}};
+\node[above=0.5cm of Fusion] {\footnotesize \textbf{Decisión}};
+
+% === Flujo de datos (flechas de información) ===
+\node[below=0.3cm of A] {\tiny Series temporales};
+\node[below=0.3cm of B] {\tiny Spikes B};
+\node[below=0.3cm of C] {\tiny Spikes C};
+\node[below=0.3cm of Fusion] {\tiny Anomalía/Normal};
+
+% === Líneas divisorias entre dominios (opcionales) ===
+\draw[dashed, gray, opacity=0.5] (2.2,-2) -- (2.2,2.5);
+\draw[dashed, gray, opacity=0.5] (6.2,-2) -- (6.2,2.5);
+\draw[dashed, gray, opacity=0.5] (9.8,-2) -- (9.8,2.5);
+
+\end{tikzpicture}
+
+\caption{Arquitectura del modelo híbrido SNN-CNN. El modelo procesa series temporales mediante tres dominios principales: (1) codificación por cuantiles, (2) procesamiento SNN con neuronas LIF y aprendizaje STDP, (3) refinamiento convolucional con kernels adaptativos, y (4) fusión dual para optimización de detección de anomalías. Las conexiones recurrentes en la capa B y la retroalimentación entre dominios permiten el procesamiento jerárquico de patrones temporales complejos.}
+\label{fig:arquitectura-hibrida}
+
+\end{figure}

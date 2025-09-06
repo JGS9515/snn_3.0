@@ -1,0 +1,66 @@
+%\begin{center}
+%{\Large \bfseries Introducción}
+%\vspace{2.5cm}
+%\end{center}
+\section{Motivación}
+
+En el mundo actual, donde la generación de datos crece exponencialmente, la capacidad para detectar comportamientos anómalos en series temporales se ha convertido en una necesidad crítica para numerosos sectores. Desde la monitorización de redes informáticas hasta el control de sistemas industriales, la identificación temprana de patrones irregulares permite prevenir fallos, optimizar recursos y garantizar la seguridad de infraestructuras críticas.
+
+Las anomalías en series temporales representan desviaciones significativas del comportamiento esperado o normal de un sistema. Estas pueden manifestarse como picos inusuales, cambios bruscos en la tendencia, o alteraciones en la periodicidad de los datos. La detección efectiva de estas irregularidades constituye un desafío considerable, especialmente cuando se trata de sistemas complejos que generan grandes volúmenes de datos en tiempo real. 
+
+Durante las últimas décadas, se han desarrollado diversos métodos para abordar este problema, desde técnicas estadísticas tradicionales hasta complejos algoritmos de aprendizaje automático. Más recientemente, los modelos de aprendizaje profundo, como autoencoders y redes neuronales recurrentes, han demostrado un rendimiento destacable en este ámbito, gracias a su capacidad para capturar relaciones no lineales y patrones temporales en los datos \cite{cherdo_time_2023,kshirasagar_auditory_2024}. Sin embargo, estos modelos convencionales presentan limitaciones, especialmente en términos de eficiencia computacional y consumo energético, factor crítico en dispositivos con recursos limitados o en aplicaciones que requieren procesamiento en tiempo real \cite{kshirasagar_auditory_2024,plummer_2d_2025}. 
+
+Las Redes Neuronales de Impulsos (\textbf{SNNs}) emergen como un paradigma prometedor que intenta emular más fielmente el funcionamiento biológico del cerebro, ofreciendo ventajas en eficiencia energética y procesamiento temporal inherente respecto a modelos convencionales de deep learning \cite{lv_efficient_2024,yusob_anomaly_2018,basler_unsupervised_2022}. Este trabajo se enmarca en la línea de investigación abierta por estudios pioneros que demostraron la viabilidad de SNNs para detección de anomalías mediante mecanismos de inhibición sináptica y codificación temporal \cite{cherdo_time_2023,yusob_anomaly_2018,basler_unsupervised_2022}, proponiendo mejoras arquitecturales y de optimización que superan limitaciones identificadas en implementaciones previas. 
+
+\section{Objetivos}
+
+El objetivo general del proyecto es el desarrollo y optimización de sistemas de detección de anomalías basados en SNNs
+
+\begin{enumerate}
+    \item Revisión bibliográfica de modelos de Redes Neuronales de Impulsos (SNNs) y su aplicación en detección de anomalías y mantenimiento predictivo.
+    \item Diseño y desarrollo de arquitecturas de SNNs optimizadas para la detección de anomalías en datos de sensores industriales.
+    \item Implementación de modelos de SNNs sostenibles que minimicen el consumo energético sin sacrificar la precisión.
+    \item Validación de los modelos desarrollados mediante experimentación en conjuntos de datos reales de mantenimiento predictivo.
+    \item Comparación de la eficiencia energética y el rendimiento predictivo frente a modelos tradicionales de detección de anomalías.
+%  \item Revisión bibliográfica de modelos de Redes Neuronales de Impulsos
+% (SNNs) y su aplicación en detección de anomalías y mantenimiento
+% predictivo.
+%  \item Diseño y desarrollo de arquitecturas de SNNs optimizadas para la
+% detección de anomalías en datos de sensores industriales.
+%  \item Implementación de modelos de SNNs sostenibles que minimicen el
+% consumo energético sin sacrificar la precisión.
+%  \item Validación de los modelos desarrollados mediante experimentación en
+% conjuntos de datos reales de mantenimiento predictivo.
+%  \item Comparación de la eficiencia energética y el rendimiento predictivo
+% frente a modelos tradicionales de detección de anomalías.
+\end{enumerate}
+
+
+\section{Estructura de la memoria}
+
+
+A continuación, se describe la estructura de la memoria correspondiente a este trabajo fin de master. La memoria consta de 5 capítulos:
+
+\begin{itemize}
+    \item\textbf{Capítulo 1}: Este capítulo inicial presenta la motivación del proyecto, destacando la importancia crítica de la detección de anomalías en series temporales para múltiples sectores industriales. Se establecen los objetivos específicos del trabajo, incluyendo el diseño de arquitecturas SNNs optimizadas y la implementación de modelos sostenibles que minimicen el consumo energético. Además, se presenta la planificación temporal del proyecto con estimación de costes y duración de las tareas principales.
+    
+    \item\textbf{Capítulo 2}: Este capítulo ofrece un análisis exhaustivo de la evolución histórica de los métodos de detección de anomalías, abarcando desde las técnicas estadísticas clásicas hasta los enfoques más avanzados de aprendizaje profundo. Se examinan los fundamentos estadísticos y enfoques tradicionales, las aplicaciones del aprendizaje profundo en detección de anomalías, y los métodos de optimización de hiperparámetros. Se dedica especial atención a las redes neuronales de impulsos y la computación neuromórfica, el desarrollo de benchmarks especializados, y el análisis comparativo de eficiencia energética entre diferentes paradigmas computacionales.
+    
+    \item\textbf{Capítulo 3}: En este capítulo se define el alcance específico del proyecto, las hipótesis de partida y las restricciones identificadas. Se presenta una descripción detallada de la solución propuesta, incluyendo la justificación para la selección de BindsNET como framework de desarrollo y la documentación de los desafíos técnicos encontrados durante la configuración del entorno. El capítulo profundiza en la arquitectura del nuevo modelo híbrido SNN-CNN, explicando las innovaciones introducidas respecto a la implementación original, y describe los algoritmos de preprocesamiento desarrollados para los datasets IOPS y CalIt2.
+    
+    \item\textbf{Capítulo 4}: Este capítulo presenta la evaluación experimental comprehensiva del modelo propuesto. Se describen los escenarios experimentales implementados, incluyendo la configuración de hardware y software, los datasets utilizados y las estrategias de particionado temporal. Se detalla la metodología de evaluación empleada, con especial énfasis en las métricas de calidad (precisión, recall, F1-score) y eficiencia computacional. El análisis de resultados incluye comparaciones entre la SNN original, el modelo híbrido propuesto y baselines de la librería TSFEDL y la importancia de los hiperparámetros, y evaluaciones de escalabilidad y eficiencia energética.
+    
+    \item\textbf{Capítulo 5}: El capítulo final sintetiza los principales hallazgos del trabajo, evaluando el cumplimiento de los objetivos planteados y el impacto de las contribuciones realizadas. Se discuten las limitaciones identificadas durante el desarrollo y se proponen direcciones para trabajos futuros que puedan extender y mejorar los métodos desarrollados.
+\end{itemize}
+
+% En el desarrollo de este capítulo (Capítulo 1) hasta ahora se ha presentado la introducción de este trabajo, lo que se abordará, la motivación y objetivos por los que se rige el mismo.
+
+% En el capítulo a continuación (Capítulo 3) se detallan los fundamentos y antecedentes en los que se comienza el estudio de la correferencia de entidades, su definición, sistemas de correferencia actuales de amplio uso tanto en inglés como en español, así como se presentan las métricas habituales que se usan en la evaluación de estos sistemas. El objetivo de este capítulo es dar a conocer conceptos básicos y precedentes que dan lugar al problema que se aborda en este trabajo.
+
+% En el Capítulo 4 se detallan las especificaciones del trabajo, el alcance del TFM, la hipótesis de partida y las restricciones que se presentan en la solución de este problema. Además, se presenta un estudio de alternativas existentes y la viabilidad de estas. Este capítulo también tiene como objetivo presentar brevemente cómo se abordará la solución que se propone, así como la metodología, planificación y presupuesto para su desarrollo.
+
+% En el Capítulo 5, se presentan los materiales y métodos que se utilizan en este trabajo. Para el flujo de la detección de correferencia planteado se presentan los datos de prueba, los modelos utilizados para la traducción de los textos de prueba, los modelos de correferencia utilizados y los modelos de alineamiento para volver al idioma original. En este capítulo, además de conocerse el flujo de trabajo para la solución que se plantea, se conocen las justificaciones de las elecciones de modelos sobre otros antes expuestos.
+
+% A continuación, el Capítulo 5, presenta la descripción y resultados de los experimentos realizados para probar la solución que se plantea en este trabajo.
+
+% Este documento finaliza con las conclusiones expuestas en el Capítulo 6, junto a las recomendaciones de trabajos futuros para mejorar los métodos expuestos.

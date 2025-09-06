@@ -1,0 +1,168 @@
+\section{Análisis de resultados}
+
+En esta sección se presentan y discuten los resultados, comparando la SNN original (A--B), la SNN híbrida (A--B--C) y modelos TSFEDL\footnote{\url{https://github.com/JGS9515/compare_to_TSFEDL}}. Se incluyen análisis por dataset, ablasiones y eficiencia.  Los tiempos de entrenamiento reportados deben interpretarse considerando que todos los modelos se ejecutaron en CPU (véase la Sección~\ref{subsec:entorno}).
+
+\subsection{Resultados por dataset}
+
+\subsubsection{IOPS}
+% TODO: Añadir valores reales y comentarios
+\begin{itemize}
+    \item \textbf{Resumen}: la capa C del modelo híbrido \textit{[mejora/no mejora]} F1 respecto a la capa B y al modelo SNN base.
+    \item \textbf{Tendencias}: \textit{[p.ej., kernels gaussian con weighted\_sum ofrecen mejor trade-off]}.
+    \item \textbf{Errores}: \textit{[falsos positivos en transitorios / falsos negativos en anomalías suaves]}.
+\end{itemize}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{lcccccc}
+\hline\hline
+\textbf{Modelo} & \textbf{N} & \textbf{Prec} & \textbf{Rec} & \textbf{F1} & \textbf{MSE} & \textbf{Tiempo inf. (ms)} \\
+\hline
+SNN (A--B) & 100 & -- & -- & -- & -- & -- \\
+SNN (A--B) & 200 & -- & -- & -- & -- & -- \\
+SNN (A--B) & 400 & -- & -- & -- & -- & -- \\
+\hline
+SNN (A--B--C) & 100 & -- & -- & -- & -- & -- \\
+SNN (A--B--C) & 200 & -- & -- & -- & -- & -- \\
+SNN (A--B--C) & 400 & -- & -- & -- & -- & -- \\
+\hline\hline
+\end{tabular}
+\caption{Resultados de detección de anomalías en dataset IOPS. N representa el número de neuronas en las capas B y C para los modelos SNN. Se muestran los mejores resultados obtenidos tras optimización con Optuna para cada configuración.}
+\label{tab:resultados-iops-escalabilidad}
+\end{table}
+
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{lcccccc}
+\hline\hline
+\textbf{Modelo} & \textbf{Prec} & \textbf{Rec} & \textbf{F1} & \textbf{MSE} & \textbf{Tiempo inf. (ms)} \\
+\hline
+SNN (A--B) & -- & -- & -- & -- & -- \\
+SNN (A--B--C) & -- & -- & -- & -- & -- \\
+TSFEDL-OhShuLih & 0.280 & 0.984 & 0.436 & 0.081 & N/A \\
+TSFEDL-KhanZulfiqar & 0.263 & 0.926 & 0.410 & 0.078 & N/A \\
+TSFEDL-ZhengZhenyu & 0.265 & 0.931 & 0.412 & 0.095 & N/A \\
+TSFEDL-WeiXiaoyan & 0.244 & 0.858 & 0.380 & 0.142 & N/A \\
+\hline\hline
+\end{tabular}
+\caption{Mejores resultados de detección de anomalías en el dataset IOPS. Se muestran las métricas de calidad y eficiencia temporal para cada modelo evaluada.}
+\label{tab:resultados-iops}
+\end{table}
+
+\subsubsection{CalIt2}
+% TODO: Añadir valores reales y comentarios
+\begin{itemize}
+    \item \textbf{Resumen}: \textit{[comentario sobre la mejora/empate]}.
+    \item \textbf{Tendencias}: \textit{[p.ej., kernel\_size=5, sigma intermedio]}.
+    \item \textbf{Errores}: \textit{[escenarios con eventos superpuestos]}.
+\end{itemize}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{lcccccc}
+\hline\hline
+\textbf{Modelo} & \textbf{N} & \textbf{Prec} & \textbf{Rec} & \textbf{F1} & \textbf{MSE} & \textbf{Tiempo inf. (ms)} \\
+\hline
+SNN (A--B) & 100 & -- & -- & -- & -- & -- \\
+SNN (A--B) & 200 & -- & -- & -- & -- & -- \\
+SNN (A--B) & 400 & -- & -- & -- & -- & -- \\
+\hline
+SNN (A--B--C) & 100 & 0.264 & 0.999 & 0.418 & 0.732 & -- \\
+SNN (A--B--C) & 200 & 0.264 & 1.000 & 0.417 & 0.734 & -- \\
+SNN (A--B--C) & 400 & 0.264 & 0.994 & 0.417 & 0.730 & -- \\
+\hline\hline
+\hline\hline
+\end{tabular}
+\caption{Resultados de detección de anomalías en dataset CalIt2. N representa el número de neuronas en las capas B y C para los modelos SNN. Se muestran los mejores resultados obtenidos tras optimización con Optuna para cada configuración.}
+\label{tab:resultados-iops-escalabilidad}
+\end{table}
+
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{lcccccc}
+\hline\hline
+\textbf{Modelo} & \textbf{Prec} & \textbf{Rec} & \textbf{F1} & \textbf{MSE} & \textbf{Tiempo inf. (ms)} \\
+\hline
+SNN (A--B) & -- & -- & -- & -- & -- \\
+SNN (A--B--C) & -- & -- & -- & -- & -- \\
+TSFEDL-OhShuLih & 0.543 & 1.000 & 0.704 & 0.036 & N/A \\
+TSFEDL-KhanZulfiqar & 0.543 & 1.000 & 0.704 & 0.026 & N/A \\
+TSFEDL-ZhengZhenyu & 0.543 & 1.000 & 0.704 & 0.034 & N/A \\
+TSFEDL-WeiXiaoyan & 0.522 & 0.970 & 0.679 & 0.090 & N/A \\
+\hline\hline
+\end{tabular}
+\caption{Mejores resultados de detección de anomalías en el dataset CalIt2. Se muestran las métricas de calidad y eficiencia temporal para cada modelo evaluada.}
+\label{tab:resultados-iops}
+\end{table}
+
+\subsection{Comparación con modelos TSFEDL}
+% TODO: Enumerar modelos concretos de TSFEDL utilizados
+Se compararon los siguientes modelos de la librería TSFEDL:
+\begin{itemize}
+    \item \textit{[CNN 1D / LSTM / GRU / TCN / Autoencoder ... (selección real empleada)]}.
+\end{itemize}
+Observaciones:
+\begin{itemize}
+    \item \textbf{Rendimiento}: \textit{[la SNN-C mejora F1 en X pp. / mantiene precisión con mejor recall]}.
+    \item \textbf{Eficiencia}: \textit{[inferencias más rápidas/lentas que TSFEDL; coste computacional relativo]}.
+\end{itemize}
+
+\subsection{Importancia de hiperparámetros}
+% TODO: Añadir figuras/tablas de Optuna si se dispone
+\begin{itemize}
+    \item \textbf{Capa convolucional}: impacto de \texttt{kernel\_type}, \texttt{kernel\_size}, \texttt{sigma}.
+    \item \textbf{Procesamiento}: comparación entre \texttt{direct}, \texttt{weighted\_sum}, \texttt{max}.
+    \item \textbf{Neuronales}: sensibilidad a \texttt{threshold} y \texttt{decay}.
+\end{itemize}
+
+\subsection{Eficiencia y escalabilidad}
+% TODO: Rellenar con medidas de tiempo reales
+\begin{itemize}
+    \item \textbf{CPU vs GPU}: \textit{[ganancia observada en entrenamiento e inferencia]}.
+    \item \textbf{Tiempo por ventana T=250}: \textit{[ms/ventana]}.
+    \item \textbf{Memoria}: \textit{[pico de RAM/VRAM]}.
+\end{itemize}
+
+\subsection{Figuras recomendadas}
+% TODO: Sustituir rutas por imágenes reales exportadas del pipeline
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{Imagenes/optuna_history_placeholder.png}
+    \caption{Histórico de mejores valores por \textit{trial} (Optuna).}
+    \label{fig:optuna-history}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{Imagenes/confusion_matrix_placeholder.png}
+    \caption{Matriz de confusión en \textit{[dataset]} para \textit{[modelo]}.}
+    \label{fig:confusion-matrix}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{Imagenes/pr_curve_placeholder.png}
+    \caption{Curva Precisión-Recall comparativa.}
+    \label{fig:pr-curve}
+\end{figure}
+
+\subsection{Amenazas a la validez}
+\begin{itemize}
+    \item \textbf{Particionado}: el uso de split 50/50 temporal puede no capturar todas las variaciones; considerar validación cruzada temporal.
+    \item \textbf{Etiquetado}: expansión de etiquetas puede sesgar la estimación de \textit{recall}; justificar en función del objetivo de alertado temprano.
+    \item \textbf{Recursos}: número limitado de \textit{trials} en Optuna por restricciones de tiempo/cómputo.
+\end{itemize}
+
+\subsection{Resumen}
+% TODO: Redactar 3–5 bullets con hallazgos clave
+\begin{itemize}
+    \item \textit{[Hallazgo 1: mejora de F1 en dataset X con configuración Y]}.
+    \item \textit{[Hallazgo 2: mejor trade-off precisión/recall con weighted\_sum]}.
+    \item \textit{[Hallazgo 3: eficiencia en GPU/CPU y coste por ventana]}.
+\end{itemize}

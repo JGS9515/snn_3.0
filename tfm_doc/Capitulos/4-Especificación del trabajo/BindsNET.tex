@@ -1,0 +1,22 @@
+\section{Selección de BindsNET como framework de desarrollo}
+
+La selección de \textbf{BindsNET} como framework de desarrollo se fundamentó en una evaluación comparativa de las opciones disponibles para la simulación de redes neuronales de impulsos orientadas al aprendizaje automático \cite{Hazan2018_BindsNET}. BindsNET proporciona objetos y métodos de software que permiten la simulación de grupos de diferentes tipos de neuronas (\textbf{bindsnet.network.nodes}), así como de diferentes tipos de conexiones entre ellas (\textbf{bindsnet.network.topology}). Estos pueden combinarse en un único objeto \textbf{bindsnet.network.Network}, responsable de coordinar la lógica de simulación de todos los componentes subyacentes \cite{bindsnet_docs}.
+
+Las características técnicas que determinaron esta selección incluyen su integración nativa con PyTorch (herramienta con la que se cuenta experiencia previa), lo que facilita la implementación en plataformas computacionales de alto rendimiento tanto en CPU como GPU. Adicionalmente, BindsNET ofrece una sintaxis concisa y orientada al usuario que resulta particularmente adecuada para prototipado rápido, aspecto crucial durante las fases iniciales de desarrollo algorítmico \cite{bindsnet_docs}.
+
+\section{Resolución de desafíos técnicos en el entorno BindsNET}
+\subsection{Problemas de compatibilidad y configuración del entorno}
+
+La instalación y configuración de BindsNET presentó desafíos técnicos significativos relacionados con la gestión de dependencias y compatibilidad de versiones . El problema principal surgió con los requisitos de versión de Python, donde \textbf{BindsNET 0.3.2} requería \textbf{Python >= 3.9 y < 3.12}, mientras que el entorno de desarrollo inicial utilizaba \textbf{Python 3.8.10}.
+
+Los conflictos de dependencias se extendieron a la gestión de paquetes, particularmente con problemas en la versión de pip que impedían la instalación correcta del framework. El error específico \textbf{"ImportError: cannot import name 'html5lib' from 'pip.\_vendor'"} indicaba incompatibilidades en el sistema de gestión de paquetes que requerían resolución antes de proceder con la instalación de BindsNET.
+
+\subsection{Estrategias de Resolución Implementadas}
+
+La estrategia implementada consistió en la desinstalación y reinstalación del Subsistema de Windows para Linux (WSL), proporcionando un entorno limpio y controlado para la instalación de BindsNET.
+
+El proceso de resolución incluyó la actualización de repositorios de paquetes mediante la adición del PPA de deadsnakes \cite{deadsnakes2025}, permitiendo acceso a versiones específicas de Python compatibles con BindsNET. La instalación de herramientas de desarrollo necesarias, incluyendo python3.10 y herramientas de compilación, se realizó de manera secuencial para evitar conflictos adicionales.
+
+La verificación de la instalación se realizó mediante la ejecución de casos de prueba incluidos en la documentación de BindsNET, confirmando la funcionalidad correcta del framework en el nuevo entorno.
+
+Sin embargo, los experimentos definitivos se consolidaron con \textbf{BindsNET 0.2.7} sobre \textbf{PyTorch 1.11.0} debido a la estabilidad de las dependencias y a la necesidad de reproducibilidad exacta. Todas las métricas reportadas en este trabajo para SNN provienen de esa combinación de versiones.

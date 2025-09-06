@@ -1,0 +1,86 @@
+\documentclass[a4paper,12pt,twoside,hidelinks,openany]{report}
+\setcounter{tocdepth}{1}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{enumitem}
+\usepackage[colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue]{hyperref}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning}
+
+\input{config.tex}
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PORTADA
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\thispagestyle{empty}
+\tfgPortada
+{TFM} %opciones: TFG o TFM
+{Escuela Politécnica Superior de Jaén}
+{Modelos de Inteligencia Artificial Sostenible para Mantenimiento Predictivo}
+{Autor: Javier González Santos}
+{Máster en Ingeniería Informática}
+{Director: Prof. D. Ángel Miguel García}
+{Departamento del director: Departamento de Informática}
+{Fecha: 30/09/2025}
+{CC-BY-NC-SA} %opciones: CC-BY, CC-BY-SA, CC-BY-NC, CC-BY-NC-ND, CC-BY-ND, CC-BY-NC-SA
+
+\thispagestyle{empty}
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Agradecimientos, Ficha e Índices
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Numeración romana para el frontmatter
+\pagenumbering{roman}
+
+\input{Capitulos/Agradecimientos}
+\cleardoublepage
+
+\input{Capitulos/FichaNormas}
+\cleardoublepage
+
+% Configuración de nombres para los índices
+\renewcommand{\contentsname}{Índice}
+\renewcommand{\listfigurename}{Índice de Figuras}
+\renewcommand{\listtablename}{Índice de Tablas}
+
+% Índice de contenidos
+\tableofcontents
+\cleardoublepage
+
+% Índice de figuras
+\listoffigures
+\cleardoublepage
+
+% Índice de tablas  
+\listoftables
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Capítulos - INICIO DEL CONTENIDO PRINCIPAL
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Cambio a numeración arábiga y reinicio del contador
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+% Capítulos del documento
+\input{Capitulos/2-Introduccion/2.0-Introducción}
+\input{Capitulos/3-Fundamentos y Estado del Arte/3.0-Fundamentos.tex}
+\input{Capitulos/4-Especificación del trabajo/4.0-Especificaciones.tex}
+\input{Capitulos/5-Resultados/5.0-Resultados}
+\input{Capitulos/7-Conclusiones/Conclusiones.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BIBLIOGRAFÍA Y REFERENCIAS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliographystyle{unsrt}
+\bibliography{Bibliografia}
+\nocite{*}
+
+\end{document}

@@ -1,0 +1,29 @@
+\section{Preprocesamiento de datos para SNN}
+
+En primer lugar, se buscó desarrollar pipelines de preprocesamiento estandarizados que pudieran manejar la heterogeneidad inherente a los datos de series temporales utilizados en aplicaciones de detección de anomalías \cite{milvus2025anomaly}. En segundo lugar, se planteó la necesidad de crear algoritmos de normalización temporal que preservaran las características críticas para la codificación de impulsos, considerando que las SNNs requieren enfoques de codificación específicos para convertir datos continuos en trenes de impulsos discretos \cite{lv_efficient_2024}. Como objetivo adicional, se implementó metodologías de completado de datos que mantuvieran la coherencia temporal necesaria para el entrenamiento efectivo de modelos basados en \textbf{STDP}.
+
+\subsection{Implementación de pipelines para dataset IOPS}
+
+El desarrollo de pipelines de preprocesamiento para el dataset \textbf{IOPS} (Input/Output Operations Per Second) contiene indicadores clave de rendimiento (\textbf{KPIs}) de diferentes servicios, presenta patrones temporales heterogéneos que incluyen comportamientos cíclicos, estables e inestables. 
+
+La implementación se estructuró en módulos especializados que abordan cada aspecto del preprocesamiento de manera independiente pero coordinada. El módulo \textbf{iops\_check\_different\_KPIs} fue diseñado para identificar y catalogar los diferentes tipos de \textbf{KPIs} presentes en el dataset, reconociendo que cada métrica requiere estrategias de normalización específicas debido a sus rangos de valores y características estadísticas particulares. El módulo \textbf{create\_new\_dataset\_per\_every\_different\_kpi} implementa la segregación de datos por tipo de KPI, facilitando el procesamiento paralelo y la optimización específica para cada métrica. 
+
+La funcionalidad de completado de datos faltantes se implementó mediante el módulo \textbf{iops\_fill\_missing\_timestamps}, que utiliza algoritmos de interpolación temporal para mantener la regularidad necesaria en las series temporales 15. Este módulo incorpora verificación de intervalos regulares y añade las observaciones necesarias con valores neutros cuando se detectan gaps temporales, preservando la integridad estructural requerida para la codificación de impulsos en SNNs. 
+
+\subsection{Implementación de pipelines para dataset CalIt2}
+
+El dataset CalIt2, que registra flujos de personas en el edificio CalIt2 de UCI, presenta características únicas que requirieron el desarrollo de algoritmos de preprocesamiento especializados \cite{UCI_Calit2_2009}. Este dataset contiene 10,080 observaciones que abarcan 15 semanas con 48 intervalos temporales por día, representando mediciones cada media hora de flujos de entrada y salida de personas \cite{UCI_Calit2_2009}.
+
+El módulo \textbf{CalIt2\_transform\_date\_to\_timestamp} implementa la conversión de formatos de fecha a representaciones timestamp uniformes, asegurando compatibilidad con los sistemas de codificación temporal de BindsNET. La verificación de duplicación de datos se realiza mediante \textbf{CalIt2\_check\_every\_row\_is\_repeated\_2\_times}, que confirma la presencia de dos streams de datos por cada timestamp (entrada y salida de personas). 
+
+El algoritmo de detección y etiquetado de anomalías implementado en \textbf{CalIt2\_fill\_label\_field} utiliza criterios basados en umbrales de conteo de personas y proximidad temporal a eventos conocidos. Este módulo incorpora lógica de clasificación que considera múltiples factores: el número de personas, la dirección del flujo (entrada/salida), y la coincidencia temporal con eventos registrados, aplicando una ventana de tolerancia de 15 minutos para determinar la proximidad a eventos. 
+
+\subsection{Algoritmos de normalización temporal}
+
+La implementación de algoritmos de normalización temporal, incluyendo completado de gaps temporales se implementó utilizando estrategias adaptativas que consideran el contexto local de cada serie temporal. Para gaps de corta duración (menos de 3 observaciones consecutivas), se aplicó interpolación lineal, mientras que para gaps más extensos se utilizó imputación basada en patrones estacionales identificados en la serie. Esta aproximación híbrida demostró ser efectiva para mantener la coherencia temporal necesaria para el entrenamiento de modelos \textbf{SNN} con \textbf{STDP}.
+
+\subsection{Arquitectura modular y reutilizable del código}
+
+La arquitectura del código desarrollado siguió principios de diseño modular que facilitan la reutilización y extensión para diferentes tipos de datasets. Cada módulo de preprocesamiento se diseñó como una unidad funcional independiente con interfaces estandarizadas, permitiendo la composición flexible de pipelines de procesamiento según las características específicas de cada dataset. 
+
+La implementación incorpora patrones de diseño que promueven la separación de responsabilidades: módulos de validación de datos, transformación, normalización y etiquetado operan de manera independiente pero coordinada. Esta arquitectura modular facilitó posteriormente la integración con el framework BindsNET y permitió la adaptación de los algoritmos de preprocesamiento para su uso en el presente trabajo de investigación.

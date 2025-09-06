@@ -1,0 +1,44 @@
+\section{Eficiencia energética}
+\subsection{Limitaciones energéticas de los métodos tradicionales}
+
+Los métodos convencionales de detección de anomalías enfrentan desafíos significativos en términos de consumo energético, especialmente cuando se implementan en dispositivos con recursos limitados \cite{skatchkovsky_bayesian_2022}. Las redes neuronales artificiales tradicionales requieren operaciones de multiplicación intensivas que consumen considerable energía, mientras que los métodos estadísticos, aunque menos demandantes computacionalmente, carecen de la capacidad para capturar patrones complejos no lineales \cite{haddad_comparative_2024,mali_comparison_2024}.
+
+Comparaciones empíricas de ANN como autoencoders vs Técnicas estadísticas como Z-score muestran los siguientes resultados:
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lccc}
+\hline \hline
+\textbf{Método} & \multicolumn{3}{c}{\textbf{Rendimiento}} \\
+\cline{2-4} 
+ & \textbf{Precision} & \textbf{Recall} & \textbf{F1-score} \\
+\hline
+Z-Score (método estadístico) & 1.00 & 0.60 & 0.75 \\
+Autoencoders (ANN) & 0.94 & 1.00 & 0.97 \\
+\hline \hline
+\end{tabular}
+\caption{Comparación de rendimiento entre métodos estadísticos y redes neuronales artificiales. Fuente: \cite{mali_comparison_2024}}
+\label{tab:my_label}
+\end{table}
+
+Para el método basado en Z-score, se reporta una precisión de 1.00, lo que indica que todas las anomalías identificadas fueron correctas, mientras que el recall es de 0.60, lo que sugiere que se detectó el 60\% de las anomalías reales. El F1-score, que equilibra precisión y recall, es de 0.75, reflejando la efectividad general de este método.
+
+En contraste, el método con autoencoders logra una precisión de 0.94, lo que indica una alta proporción de anomalías correctamente identificadas con un mínimo de falsos positivos. El recall es de 1.00, indicando que se detectaron todas las anomalías reales. En consecuencia, el F1-score del método con autoencoders es de 0.97, lo que evidencia un rendimiento superior en comparación con el enfoque basado en Z-score. La mayor desventaja de este enfoque es su mayor consumo energético. Esta compensación entre precisión y eficiencia energética representa uno de los principales motivadores para la exploración de paradigmas computacionales alternativos \cite{mali_comparison_2024}.
+
+\subsection{Paradigma de eficiencia energética en SNNs}
+
+Las redes neuronales de impulsos emergen como una solución prometedora debido a su naturaleza impulsada por eventos y su capacidad para realizar computación usando únicamente operaciones de acumulación en lugar de multiplicaciones costosas \cite{jang_bisnn_2021}. Esta característica fundamental permite que las SNNs consumen significativamente menos energía que sus contrapartes tradicionales.
+
+Los sistemas de detección de anomalías basados en SNNs para redes IoT han logrado eficiencias energéticas aproximadamente 3.5 veces superiores a los modelos CNN tradicionales, con latencias de detección significativamente menores (hasta 3 veces más rápidas) \cite{maddula_ai-driven_2024}. Estos resultados demuestran que, aunque puede existir una ligera reducción en la precisión de detección de anomalías (89.3\% para SNN vs 92.5\% para CNN), los beneficios en eficiencia energética y latencia proporcionan un caso convincente para el uso de SNNs en aplicaciones específicas \cite{maddula_ai-driven_2024}.
+
+Un estudio reciente presenta una metodología de transformar exitosamente arquitecturas de redes neuronales artificiales (ANN) en redes neuronales de picos (SNN) con una penalización de error promedio marginal de tan solo 2,65\%. El algoritmo de particionamiento de grafos propuesto permite una disminución del 14,22\% en la comunicación intersináptica y una reducción del 87,58\% en la comunicación intrasináptica, en promedio, lo que subraya la efectividad del algoritmo propuesto en la optimización de las vías de comunicación de las redes neuronales. En comparación con un algoritmo de particionamiento de grafos de referencia, el enfoque propuesto muestra una disminución promedio del 79,74\% en la latencia y una reducción del 14,67\% en el consumo energético. Usando herramientas existentes de redes en chip (NoC), el producto energía-latencia de las arquitecturas SNN es, en promedio, un 82,71\% inferior al de las arquitecturas de referencia \cite{islam_benchmarking_2024}.
+
+\subsection{Hiperparametrozación en SNN}
+
+La optimización de hiperparámetros SNNs representa un avance significativo en el desarrollo de sistemas de detección de anomalías eficientes energéticamente. Tradicionalmente, Búsqueda en Cuadrícula y Random Search se han usado como metodología de optimización de parámetros, donde el búsqueda en cuadrícula prueba cada combinación de hipermarámetros posibles y random search crea aleatoreamente grupos de parámetros dentro de los límites. Ambos métodos, aunque ampliamente utilizados, tienen sus limitaciones: a menudo son lentos y no siempre encuentran la combinación óptima de manera eficiente \cite{noauthor_optuna_nodate}. 
+
+Actualmente existen frámeworks especializados optimizar la hiperparametrización como es el caso de Optuna. Este utiliza algoritmos de optimización bayesiana basados en Tree-structured Parzen Estimator (TPE) que permiten una exploración inteligente del espacio de hiperparámetros, enfocándose en regiones prometedoras en lugar de realizar búsquedas exhaustivas \cite{noauthor_optuna_nodate}. Esta aproximación resulta particularmente beneficiosa para SNNs, donde la sensibilidad a los hiperparámetros es especialmente crítica debido a la compleja dinámica temporal entre neuronas y impulsos, la optimización bayesiana puede descubrir configuraciones óptimas de hiperparámetros con significativamente menos evaluaciones que métodos tradicionales como la búsqueda en cuadrícula, reduciendo tanto el tiempo de experimentación como los recursos computacionales necesarios \cite{firmin_parallel_2024}.
+
+Optuna también cuenta con un mecanismo de poda  basado en el algoritmo Asynchronous Successive Halving Algorithm (\textbf{ASHA}) que permite detener automáticamente aquellos ensayos que no muestran resultados prometedores en las primeras etapas del entrenamiento \cite{noauthor_efficient_2021}. Para SNNs, esto es especialmente valioso dado que pueden sufrir del problema conocido como "\textbf{redes silenciosas}", configuraciones que fallan en generar suficientes impulsos debido a hiperparámetros mal ajustados. La detección temprana de estas configuraciones no viables permite dirigir la búsqueda hacia combinaciones de hiperparámetros más prometedoras, evitando computaciones costosas e innecesarias que son particularmente relevantes en el contexto de optimización energética \cite{firmin_parallel_2024}. 
+
+Los resultados experimentales demuestran que las SNNs optimizadas con Optuna pueden cerrar la brecha de precisión con respecto a las ANNs tradicionales mientras mantienen sus ventajas inherentes de eficiencia energética \cite{parsa_bayesian-based_2019}. Esta optimización multiobjetivo resulta especialmente relevante para aplicaciones de edge computing y IoT, donde las restricciones energéticas son significativas y la detección temprana de anomalías es crítica para la seguridad y operación de sistemas industriales.
