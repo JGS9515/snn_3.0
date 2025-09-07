@@ -7,7 +7,7 @@ En esta sección se presentan y discuten los resultados, comparando la SNN origi
 \subsubsection{IOPS}
 Los resultados en el dataset IOPS muestran el desafío de la detección de anomalías en datos altamente desbalanceados (1.92\% de anomalías):
 \begin{itemize}
-    \item \textbf{Resumen}: La arquitectura híbrida SNN (A--B--C) muestra mejoras significativas sobre el modelo base en IOPS. El mejor resultado híbrido alcanza F1 = 0.277 (configuración n\_100), representando una mejora de 4.6x sobre el modelo SNN base (F1 = 0.061), aunque sigue siendo inferior a los baselines TSFEDL.
+    \item \textbf{Resumen}: La arquitectura híbrida SNN (A--B--C) muestra mejoras significativas sobre el modelo base en IOPS. El mejor resultado híbrido alcanza F1 = 0.277 (configuración n\_100), representando una mejora de 4.6x sobre el modelo SNN base (F1 = 0.060), aunque sigue siendo inferior a los baselines TSFEDL.
     \item \textbf{Tendencias}: Los mejores resultados se obtuvieron con kernels \texttt{mexican\_hat} y \texttt{laplacian}, procesamiento \texttt{weighted\_sum} y \texttt{max}, y configuraciones de menor número de neuronas (n\_100 > n\_200 > n\_400), sugiriendo que redes más grandes tienden a sobreajustarse en este dataset desbalanceado.
     \item \textbf{Errores}: A pesar de las mejoras, persiste el desafío del extremo desbalanceo, con el modelo híbrido logrando detectar una fracción mayor de anomalías pero manteniendo altas tasas de falsos negativos comparado con métodos tradicionales.
 \end{itemize}
@@ -55,7 +55,7 @@ TSFEDL-WeiXiaoyan & 0.244 & 0.858 & 0.380 & 0.142 \\
 \subsubsection{CalIt2}
 Los resultados en el dataset CalIt2 muestran un rendimiento consistente y aceptable para detección de anomalías (24.80\% de anomalías):
 \begin{itemize}
-    \item \textbf{Resumen}: La arquitectura híbrida SNN (A--B--C) mantiene un F1-score estable entre 0.417-0.418 en todas las configuraciones de neuronas (100, 200, 400), mostrando robustez ante el escalado. El mejor resultado es F1 = 0.4176 con n\_100, superando significativamente al modelo SNN base (F1 = 0.061) pero quedando por debajo de TSFEDL (F1 = 0.704).
+    \item \textbf{Resumen}: La arquitectura híbrida SNN (A--B--C) mantiene un F1-score estable entre 0.416-0.417 en todas las configuraciones de neuronas (100, 200, 400), mostrando robustez ante el escalado. El mejor resultado es F1 = 0.417 con n\_100, superando significativamente al modelo SNN base (F1 = 0.239) con una mejora de 1.7x pero quedando por debajo de TSFEDL (F1 = 0.704).
     \item \textbf{Tendencias}: Optuna seleccionó consistentemente kernels \texttt{mexican\_hat} y \texttt{gaussian} con tamaños 5-7, procesamiento \texttt{direct}, y valores de threshold en el rango [-66.8, -67.7]. Los mejores trials se encontraron típicamente entre las evaluaciones 32-75, con duración promedio de 14-42 minutos.
     \item \textbf{Errores}: Recall muy alto (99.4-100\%) pero precisión moderada (26.4\%), resultando en una estrategia conservadora que prioriza la detección de todas las anomalías a costa de generar falsos positivos, apropiada para aplicaciones donde el costo de perder una anomalía es alto.
 \end{itemize}
@@ -110,7 +110,7 @@ Se compararon los siguientes modelos de la librería TSFEDL basados en los resul
 \end{itemize}
 Observaciones:
 \begin{itemize}
-    \item \textbf{Rendimiento en IOPS}: Los modelos TSFEDL superan a las SNN con F1-scores en el rango 0.380-0.436 vs 0.061-0.277 de las SNN. OhShuLih obtuvo el mejor resultado (F1=0.436), mientras que la mejor SNN híbrida alcanzó F1=0.277, cerrando parcialmente la brecha respecto al modelo SNN base (F1=0.061).
-    \item \textbf{Rendimiento en CalIt2}: Los modelos TSFEDL mantienen ventaja con F1-scores de 0.679-0.704 vs 0.061-0.418 de las SNN. La SNN híbrida (F1=0.418) se acerca más a los baselines que en IOPS, pero los tres mejores modelos TSFEDL (F1=0.704) siguen manteniendo una ventaja de 68\%.
+    \item \textbf{Rendimiento en IOPS}: Los modelos TSFEDL superan a las SNN con F1-scores en el rango 0.380-0.436 vs 0.060-0.277 de las SNN. OhShuLih obtuvo el mejor resultado (F1=0.436), mientras que la mejor SNN híbrida alcanzó F1=0.277, cerrando parcialmente la brecha respecto al modelo SNN base (F1=0.060).
+    \item \textbf{Rendimiento en CalIt2}: Los modelos TSFEDL mantienen ventaja con F1-scores de 0.679-0.704 vs 0.239-0.417 de las SNN. La SNN híbrida (F1=0.417) se acerca más a los baselines que en IOPS, pero los tres mejores modelos TSFEDL (F1=0.704) siguen manteniendo una ventaja de 69\%.
     \item \textbf{Eficiencia}: Las SNN mantienen ventajas potenciales en eficiencia computacional debido a la sparsity inherente de los impulsos discretos, aunque la validación empírica de estas ventajas requiere hardware neuromórfico especializado.
 \end{itemize}
