@@ -111,13 +111,6 @@ Una línea prioritaria consiste en la ejecución del modelo en hardware neuromó
     \item \textbf{Plataformas candidatas}: Intel Loihi 2, SpiNNaker 2, BrainScaleS-2, chips basados en memristores emergentes.
     \item \textbf{Portado del modelo}: Conversión de parámetros LIF y topología a formato compatible (e.g. NxSDK / Lava para Loihi), sustituyendo operaciones convolucionales por proyecciones locales o \textit{compartment groups}.
     \item \textbf{Métricas energéticas}: Joules por inferencia, mW promedio, latencia por ventana \(T\), escalabilidad en número de neuronas vs. consumo.
-    % \item \textbf{Procedimiento}: 
-    % \begin{enumerate}
-    %     \item Exportar pesos y kernels optimizados desde la versión PyTorch.
-    %     \item Mapear kernel 1D a conectividad local (ventanas deslizantes) usando bloques de proyección sobre neuronas receptoras en hardware.
-    %     \item Ejecutar baterías de inferencia con y sin eventos anómalos controlados para medir variación energética (baseline vs. carga activa).
-    % \end{enumerate}
-    % \item \textbf{Objetivo final}: Derivar curvas energía–rendimiento (Pareto) frente a ANN equivalentes y validar la hipótesis de ahorro (\(\times 10\)–\(\times 100\)) en entornos edge.
 \end{itemize}
 
 \subsection{Integración MLOps y ciclo de vida}
