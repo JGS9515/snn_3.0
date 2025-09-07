@@ -1,0 +1,16 @@
+\babel@toc {spanish}{}\relax 
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {1.1}{\ignorespaces Planificación temporal de tareas, con duración estimada en semanas y coste asociado.}}{8}{table.caption.5}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {2.1}{\ignorespaces Comparación de rendimiento entre métodos estadísticos y redes neuronales artificiales. Fuente: \cite {mali_comparison_2024}}}{18}{table.caption.8}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {3.1}{\ignorespaces Comparación entre SNN original y modelo híbrido — Parte 1: arquitectura, conexiones y optimización.}}{28}{table.caption.9}%
+\contentsline {table}{\numberline {3.2}{\ignorespaces Comparación entre SNN original y modelo híbrido — Parte 2: evaluación, implementación y ventajas.}}{29}{table.caption.10}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {4.1}{\ignorespaces Comparativa principal de versiones de software entre TSFEDL y Proyecto SNN.}}{42}{table.caption.27}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces Resultados de detección de anomalías en dataset IOPS. N representa el número de neuronas en las capas B y C para los modelos SNN. Se muestran los mejores resultados obtenidos tras optimización con Optuna para cada configuración.}}{49}{table.caption.38}%
+\contentsline {table}{\numberline {4.3}{\ignorespaces Mejores resultados de detección de anomalías en el dataset IOPS. Se muestran las métricas de calidad para cada modelo evaluada.}}{50}{table.caption.39}%
+\contentsline {table}{\numberline {4.4}{\ignorespaces Resultados de detección de anomalías en dataset CalIt2. N representa el número de neuronas en las capas B y C para los modelos SNN. Se muestran los mejores resultados obtenidos tras optimización con Optuna para cada configuración.}}{50}{table.caption.41}%
+\contentsline {table}{\numberline {4.5}{\ignorespaces Mejores resultados de detección de anomalías en el dataset CalIt2. Se muestran las métricas de calidad para cada modelo evaluada.}}{51}{table.caption.42}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {5.1}{\ignorespaces Resumen del grado de cumplimiento de los objetivos planteados.}}{57}{table.caption.46}%

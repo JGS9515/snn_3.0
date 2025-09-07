@@ -1,10 +1,46 @@
-\chapter{Resumen}
+\chapter*{Resumen}
+\addcontentsline{toc}{chapter}{Resumen}
+
 \section{Resumen}
+
+La detección de anomalías en series temporales constituye un desafío crítico en múltiples sectores industriales, desde la monitorización de redes informáticas hasta el mantenimiento predictivo de infraestructuras críticas. Los métodos tradicionales de detección de anomalías, aunque efectivos, presentan limitaciones significativas en términos de eficiencia energética y escalabilidad, especialmente en aplicaciones de edge computing y dispositivos con recursos limitados.
+
+Este Trabajo Fin de Máster presenta el desarrollo y optimización de una arquitectura híbrida SNN-CNN (Spiking Neural Network - Convolutional Neural Network) para la detección de anomalías en series temporales, con especial énfasis en la sostenibilidad computacional y la eficiencia energética. Las Redes Neuronales de Impulsos (SNNs) emergen como un paradigma prometedor que emula más fielmente el funcionamiento biológico del cerebro, ofreciendo ventajas teóricas en eficiencia energética mediante la sparsity inherente de los impulsos discretos.
+
+La solución propuesta extiende una arquitectura SNN base (A--B) mediante la incorporación de una capa convolucional optimizable (A--B--C) que aplica kernels parametrizables (gaussiano, laplaciano, mexican hat, box) con diferentes modos de procesamiento (direct, weighted\_sum, max). Esta hibridación busca combinar las ventajas de extracción de características espaciales de las redes convolucionales con la eficiencia temporal asíncrona de las SNNs.
+
+La metodología experimental empleó optimización bayesiana con Optuna TPE (Tree-structured Parzen Estimator) para la búsqueda sistemática de hiperparámetros, ejecutando 100 trials por configuración en tres escalas de red (100, 200, 400 neuronas). Se implementó un pipeline de preprocesamiento reproducible que incluye cuantización dinámica por cuantiles expandidos, expansión de etiquetas para mitigar el desbalanceo temporal, y segmentación en ventanas de longitud T=250.
+
+La validación experimental se realizó sobre dos datasets públicos con características diferenciadas: IOPS (altamente desbalanceado, 1.92\% anomalías) y CalIt2 (moderadamente balanceado, 24.80\% anomalías). Los resultados demuestran que la arquitectura híbrida propuesta logra mejoras significativas respecto al modelo SNN base: 4.6x en IOPS (F1=0.277 vs 0.061) y 6.8x en CalIt2 (F1=0.418 vs 0.061).
+
+La comparación con modelos del estado del arte (TSFEDL) revela que, aunque los métodos tradicionales de deep learning mantienen ventaja en rendimiento absoluto (F1=0.436 en IOPS, F1=0.704 en CalIt2), la arquitectura híbrida SNN-CNN reduce significativamente la brecha de rendimiento mientras preserva las ventajas teóricas de eficiencia energética de las SNNs. Los experimentos identificaron que kernels mexican\_hat y gaussian con procesamiento direct son consistentemente seleccionados por la optimización automática, sugiriendo preferencia por suavizado espacial sobre detección de bordes.
+
+El análisis de importancia de hiperparámetros confirma que los parámetros neuronales (threshold, decay) y de plasticidad (nu1, nu2) son los más influyentes, seguidos de los parámetros convolucionales (kernel\_size, sigma), validando la importancia de la dinámica neuronal LIF en el rendimiento del modelo.
+
+Las principales contribuciones del trabajo incluyen: (1) la propuesta de una arquitectura híbrida SNN-CNN optimizable automáticamente, (2) la implementación de un pipeline de preprocesamiento reproducible adaptado a las características de las SNNs, (3) la demostración empírica de que la hibridación mejora significativamente el rendimiento en datasets desbalanceados, y (4) el desarrollo de una metodología de evaluación comparativa que sienta bases para trabajos futuros en el área.
+
+Las limitaciones identificadas incluyen la ejecución en CPU debido a incompatibilidades de dependencias, la imposibilidad de validar empíricamente las ventajas energéticas sin hardware neuromórfico especializado, y el número limitado de trials de optimización por restricciones temporales del proyecto.
+
+Este trabajo demuestra el potencial de las arquitecturas híbridas SNN-CNN para aplicaciones de detección de anomalías, proporcionando un compromiso atractivo entre rendimiento y eficiencia computacional que posiciona a las SNNs como una alternativa viable para aplicaciones de tiempo real en entornos con restricciones energéticas.
+
 \section{Abstract}
 
-{Especificación}
+Anomaly detection in time series constitutes a critical challenge across multiple industrial sectors, from computer network monitoring to predictive maintenance of critical infrastructures. Traditional anomaly detection methods, while effective, present significant limitations in terms of energy efficiency and scalability, especially in edge computing applications and resource-constrained devices.
 
-En este capítulo se presenta la especificación del trabajo, con una estructura y
-contenidos inspirados en los criterios y recomendaciones que establece la norma
-UNE 157801:2007 - “Criterios Generales para la elaboración de proyectos de
-Sistemas de Información”.
+This Master's Thesis presents the development and optimization of a hybrid SNN-CNN (Spiking Neural Network - Convolutional Neural Network) architecture for time series anomaly detection, with special emphasis on computational sustainability and energy efficiency. Spiking Neural Networks (SNNs) emerge as a promising paradigm that more faithfully emulates biological brain functioning, offering theoretical advantages in energy efficiency through the inherent sparsity of discrete spikes.
+
+The proposed solution extends a base SNN architecture (A--B) by incorporating an optimizable convolutional layer (A--B--C) that applies parametrizable kernels (Gaussian, Laplacian, Mexican hat, box) with different processing modes (direct, weighted\_sum, max). This hybridization seeks to combine the spatial feature extraction advantages of convolutional networks with the asynchronous temporal efficiency of SNNs.
+
+The experimental methodology employed Bayesian optimization with Optuna TPE (Tree-structured Parzen Estimator) for systematic hyperparameter search, executing 100 trials per configuration across three network scales (100, 200, 400 neurons). A reproducible preprocessing pipeline was implemented including dynamic quantization by expanded quantiles, label expansion to mitigate temporal imbalance, and segmentation into windows of length T=250.
+
+Experimental validation was performed on two public datasets with differentiated characteristics: IOPS (highly imbalanced, 1.92\% anomalies) and CalIt2 (moderately balanced, 24.80\% anomalies). Results demonstrate that the proposed hybrid architecture achieves significant improvements over the base SNN model: 4.6x in IOPS (F1=0.277 vs 0.061) and 6.8x in CalIt2 (F1=0.418 vs 0.061).
+
+Comparison with state-of-the-art models (TSFEDL) reveals that while traditional deep learning methods maintain advantage in absolute performance (F1=0.436 in IOPS, F1=0.704 in CalIt2), the hybrid SNN-CNN architecture significantly reduces the performance gap while preserving the theoretical energy efficiency advantages of SNNs. Experiments identified that Mexican hat and Gaussian kernels with direct processing are consistently selected by automatic optimization, suggesting preference for spatial smoothing over edge detection.
+
+Hyperparameter importance analysis confirms that neural parameters (threshold, decay) and plasticity parameters (nu1, nu2) are most influential, followed by convolutional parameters (kernel\_size, sigma), validating the importance of LIF neural dynamics in model performance.
+
+The main contributions of this work include: (1) the proposal of an automatically optimizable hybrid SNN-CNN architecture, (2) the implementation of a reproducible preprocessing pipeline adapted to SNN characteristics, (3) the empirical demonstration that hybridization significantly improves performance on imbalanced datasets, and (4) the development of a comparative evaluation methodology that establishes foundations for future work in the area.
+
+Identified limitations include CPU-only execution due to dependency incompatibilities, the inability to empirically validate energy advantages without specialized neuromorphic hardware, and the limited number of optimization trials due to project time constraints.
+
+This work demonstrates the potential of hybrid SNN-CNN architectures for anomaly detection applications, providing an attractive compromise between performance and computational efficiency that positions SNNs as a viable alternative for real-time applications in energy-constrained environments.

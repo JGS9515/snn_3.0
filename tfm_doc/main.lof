@@ -1,0 +1,14 @@
+\babel@toc {spanish}{}\relax 
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {1.1}{\ignorespaces Diagrama de Gantt del proyecto. Fuente: Elaboración propia.}}{10}{figure.caption.6}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Evolución de la detección de anomalía. Fuente: Elaboración propia.}}{17}{figure.caption.7}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Flujo de datos y arquitectura SNN. Fuente: Elaboración propia.}}{32}{figure.caption.15}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Codificación y preprocesado de la señal. Fuente: Elaboración propia.}}{33}{figure.caption.17}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Arquitectura detallada de la capa convolucional híbrida mostrando el flujo desde los spikes de la capa B hacia el procesamiento convolucional con kernels adaptativos. Fuente: Elaboración propia.}}{34}{figure.caption.20}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Histórico de mejores valores por \textit {trial} (Optuna).}}{53}{figure.caption.43}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Matriz de confusión en \textit {[dataset]} para \textit {[modelo]}.}}{54}{figure.caption.44}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Curva Precisión-Recall comparativa.}}{55}{figure.caption.45}%
+\addvspace {10\p@ }
