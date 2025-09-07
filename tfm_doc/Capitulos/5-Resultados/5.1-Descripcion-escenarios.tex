@@ -203,26 +203,3 @@ La SNN híbrida (A--B--C) se optimizó con Optuna (TPE) maximizando F1:
         \item \texttt{trials = 100}
     \end{itemize}
 \end{itemize}
-
-
-\subsection{Resumen de configuraciones ensayadas. (POSIBLEMENTE LO VOY A BORRAR)}
-% TODO: Añadir filas con los experimentos reales
-
-\begin{table}[htbp]
-\centering
-\small
-\begin{tabular}{llcccccc}
-\hline\hline
-\textbf{ExpID} & \textbf{Modelo} & \textbf{Dataset} & \textbf{Kernel} & \textbf{K} & \(\sigma\) & \textbf{Proc} & \texttt{T} \\
-\hline
-E0 & SNN (A--B) & IOPS & -- & -- & -- & -- & 250 \\
-E1 & SNN (A--B--C) & IOPS & \textit{[TODO]} & \textit{[3/5/7/9]} & \textit{[TODO]} & \textit{[dir/ws/max]} & 250 \\
-E2 & TSFEDL-\textit{[modelo]} & IOPS & N/A & N/A & N/A & N/A & -- \\
-E3 & SNN (A--B) & CalIt2 & -- & -- & -- & -- & 250 \\
-E4 & SNN (A--B--C) & CalIt2 & \textit{[TODO]} & \textit{[3/5/7/9]} & \textit{[TODO]} & \textit{[dir/ws/max]} & 250 \\
-E5 & TSFEDL-\textit{[modelo]} & CalIt2 & N/A & N/A & N/A & N/A & -- \\
-\hline\hline
-\end{tabular}
-\caption{Resumen de configuraciones ensayadas. K: tamaño de kernel; Proc: modo de procesamiento (direct/weighted\_sum/max).}
-\label{tab:resumen-configuraciones}
-\end{table}

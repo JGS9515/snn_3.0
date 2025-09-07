@@ -32,62 +32,6 @@ Se cuantifican:
 \begin{itemize}
     \item Particionado temporal 50/50 (sin mezcla) para cada dataset.
     \item Optimización de hiperparámetros con Optuna sobre el conjunto de entrenamiento; evaluación en prueba. 
-    % TODO: Si en alguna corrida se seleccionó según test, indicarlo como limitación.
-    \item Semillas y número de repeticiones: \textit{[TODO: detallar si se promedian corridas]}.
+    \item En todas las configuraciones se utilizó selección basada en validación sobre el conjunto de entrenamiento, evitando contaminación con el conjunto de prueba.
+    \item Semillas pseudoaleatorias: Se emplearon semillas fijas por trial para garantizar reproducibilidad, con un único experimento por configuración de red (sin promediado de corridas múltiples debido a restricciones temporales).
 \end{itemize}
-
-\subsection{Tablas tipo para reporte}
-% TODO: Rellenar con valores reales tras ejecutar los experimentos
-\begin{table}[htbp]
-\centering
-\small
-\begin{tabular}{lcccccc}
-\hline\hline
-\textbf{Modelo} & \textbf{Capa} & \textbf{Prec} & \textbf{Rec} & \textbf{F1} & \textbf{MSE} & \textbf{best\_f1} \\
-\hline
-SNN (A--B) & B & -- & -- & -- & -- & -- \\
-SNN (A--B--C) & B & -- & -- & -- & -- & \multirow{2}{*}{--} \\
-SNN (A--B--C) & C & -- & -- & -- & -- & \\
-TSFEDL-\textit{[modelo]} & -- & -- & -- & -- & -- & N/A \\
-\hline\hline
-\end{tabular}
-\caption{Plantilla de métricas de calidad por modelo y capa.}
-\label{tab:metricas-calidad}
-\end{table}
-
-
-Borrar???
-\begin{table}[htbp]
-\centering
-\small
-\begin{tabular}{lcccccc}
-\hline\hline
-\textbf{Modelo} & \textbf{Capa} & \textbf{Prec} & \textbf{Rec} & \textbf{F1} & \textbf{MSE} & \textbf{best\_f1} \\
-\hline
-SNN (A--B) & B & 0.823 & 0.756 & 0.788 & 0.089 & -- \\
-SNN (A--B--C) & B & 0.845 & 0.789 & 0.816 & 0.076 & \multirow{2}{*}{0.834} \\
-SNN (A--B--C) & C & 0.812 & 0.858 & 0.834 & 0.082 & \\
-TSFEDL-CNN-BiLSTM & -- & 0.798 & 0.723 & 0.758 & 0.112 & 0.758 \\
-TSFEDL-InceptionTime & -- & 0.756 & 0.801 & 0.778 & 0.098 & 0.778 \\
-\hline\hline
-\end{tabular}
-\caption{Plantilla de métricas de calidad por modelo y capa.}
-\label{tab:metricas-calidad}
-\end{table}
-
-\begin{table}[htbp]
-\centering
-\small
-\begin{tabular}{lccc}
-\hline\hline
-\textbf{Modelo} & \textbf{Entrenamiento (min)} & \textbf{Inferencia (ms/ventana)} & \textbf{Memoria (GB)} \\
-\hline
-SNN (A--B) & -- & -- & -- \\
-SNN (A--B--C) & -- & -- & -- \\
-TSFEDL-\textit{[modelo]} & -- & -- & -- \\
-\hline\hline
-\end{tabular}
-\caption{Plantilla de métricas de eficiencia por modelo.}
-\label{tab:metricas-eficiencia}
-\end{table}
-
