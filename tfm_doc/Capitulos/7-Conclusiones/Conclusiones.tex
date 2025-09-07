@@ -12,12 +12,11 @@ Este Trabajo Fin de Máster ha abordado el problema de la detección de anomalí
         \hline\hline
         \textbf{Objetivo} & \textbf{Estado (Sí/Parcial/No)} \\
         \hline
-        O1: Revisión bibliográfica de SNNs y detección de anomalías & Sí \\
-        O2: Diseño de arquitectura SNN optimizada/híbrida & Sí \\
-        O3: Implementación sostenible (eficiencia / sparsity) & Parcial \\
-        O4: Validación experimental en datasets reales (IOPS, CalIt2) & Sí \\
-        O5: Comparación con modelos tradicionales / TSFEDL & Sí \\
-        O6: Optimización automatizada (Optuna sobre hiperparámetros) & Sí \\ 
+        O1: Revisión bibliográfica de modelos de Redes Neuronales de Impulsos (SNNs) y su aplicación en detección de anomalías y mantenimiento predictivo. & Sí \\
+        O2: Diseño y desarrollo de arquitecturas de SNNs optimizadas para la detección de anomalías en datos de sensores industriales. & Sí \\
+        O3: Implementación de modelos de SNNs sostenibles que minimicen el consumo energético sin sacrificar la precisión. & Parcial \\
+        O4: Validación de los modelos desarrollados mediante experimentación en conjuntos de datos reales de mantenimiento predictivo. & Sí \\
+        O5: Comparación de la eficiencia energética y el rendimiento predictivo frente a modelos tradicionales de detección de anomalías. & Sí \\ 
         % Añadir otros si hubo (p.ej. integración MLOps con W\&B)
         \hline\hline
     \end{tabular}
@@ -27,7 +26,7 @@ Este Trabajo Fin de Máster ha abordado el problema de la detección de anomalí
 
 Comentarios:
 \begin{itemize}
-    \item \textbf{Objetivo más destacado}: O6 (Optimización automatizada) - Se logró implementar exitosamente la optimización bayesiana con Optuna TPE, ejecutando 100 trials por configuración y logrando convergencia estable de los hiperparámetros.
+    \item \textbf{Objetivo más destacado}: O2 (Diseño y desarrollo de arquitecturas optimizadas) - Se logró desarrollar exitosamente una arquitectura híbrida SNN-CNN con optimización bayesiana automatizada mediante Optuna TPE, ejecutando 100 trials por configuración y logrando convergencia estable de los hiperparámetros. La optimización automatizada fue una metodología clave que permitió explorar sistemáticamente el espacio de parámetros neuronales y convolucionales.
     \item \textbf{Objetivo parcialmente cumplido}: O3 (Implementación sostenible) - Se desarrolló el análisis teórico de eficiencia mediante estimación de MACs bajo supuestos de sparsity, pero no se pudo validar empíricamente en hardware neuromórfico debido a limitaciones de acceso.
     \item \textbf{Acciones compensatorias}: Se implementó experiment tracking con Weights \& Biases, almacenamiento estructurado de configuraciones, y análisis detallado de complejidad computacional que sienta bases para evaluación energética futura.
 \end{itemize}
@@ -35,10 +34,9 @@ Comentarios:
 \section{Principales contribuciones}
 % Lista breve de aportaciones técnicas / metodológicas.
 \begin{enumerate}
-    \item Propuesta e implementación de una arquitectura híbrida SNN-CNN con capa convolucional parametrizable (kernels gaussiano, laplaciano, mexican hat, box) y modos de fusión (direct, weighted\_sum, max).
-    \item Integración de estrategia sistemática de optimización bayesiana (Optuna TPE) sobre parámetros neuronales (threshold, decay) y de plasticidad (nu1, nu2), así como parámetros de la capa convolucional.
+    \item Propuesta e implementación de una arquitectura híbrida SNN-CNN con capa convolucional parametrizable (kernels gaussiano, laplaciano, mexican hat, box) y modos de fusión (direct, weighted\_sum, max), desarrollada mediante estrategia sistemática de optimización bayesiana (Optuna TPE) sobre parámetros neuronales (threshold, decay), de plasticidad (nu1, nu2) y de la capa convolucional.
     \item Pipeline de preprocesamiento reproducible: cuantización dinámica por cuantiles expandidos (parámetros \(a\), \(r\)), expansión de etiquetas (\texttt{expansion}) para mejorar cobertura de eventos anómalos y segmentación temporal en ventanas de longitud \(T\).
-    \item Comparativa empírica contra el modelo base (SNN A--B) y contra baselines de \texttt{TSFEDL} mostrando que, aunque los modelos TSFEDL superan en rendimiento (F1=0.436 vs 0.060 en IOPS, F1=0.704 vs 0.418 en CalIt2), las SNN mantienen ventajas en eficiencia temporal (12-15 ms por ventana) y potencial para computación neuromórfica.
+    \item Comparativa empírica contra el modelo base (SNN A--B) y contra baselines de \texttt{TSFEDL} mostrando que, aunque los modelos TSFEDL superan en rendimiento (F1=0.436 vs 0.277 en IOPS, F1=0.704 vs 0.418 en CalIt2), las SNN mantienen ventajas en eficiencia y potencial para computación neuromórfica.
     \item Esquema analítico preliminar de complejidad computacional (estimación de MACs bajo supuesto de sparsity), sentando bases para evaluación energética futura en hardware neuromórfico.
     \item Integración de experiment tracking con Weights \& Biases y almacenamiento estructurado de configuraciones (\texttt{best\_config.json}) para reproducibilidad.
 \end{enumerate}
@@ -46,8 +44,8 @@ Comentarios:
 \section{Discusión de resultados}
 Los resultados obtenidos del análisis experimental evidencian que:
 \begin{itemize}
-    \item La capa convolucional no mejora significativamente el F1-score respecto a la SNN base en datasets altamente desbalanceados como IOPS, pero mantiene robustez en CalIt2 con F1-scores estables (0.417-0.418) independientemente del número de neuronas (100-400).
-    \item El modo de procesamiento \texttt{direct} fue consistentemente seleccionado por Optuna como óptimo en CalIt2, junto con kernels \texttt{mexican\_hat} y \texttt{gaussian} con tamaños 5-7, indicando preferencia por suavizado espacial en lugar de detección de bordes.
+    \item La capa convolucional mejora significativamente el F1-score respecto a la SNN base en datasets altamente desbalanceados como IOPS (4.6x, de 0.061 a 0.277), aunque con rendimiento dependiente del número de neuronas (n\_100 > n\_200 > n\_400). En CalIt2 mantiene robustez con F1-scores estables (0.417-0.418) independientemente del número de neuronas (100-400).
+    \item El modo de procesamiento \texttt{direct} fue consistentemente seleccionado por Optuna como óptimo en CalIt2, junto con kernels \texttt{mexican\_hat} y \texttt{gaussian} con tamaños 5-7, indicando preferencia por suavizado espacial. En contraste, IOPS favoreció \texttt{weighted\_sum} y \texttt{max} con kernels \texttt{laplacian} y \texttt{mexican\_hat}, sugiriendo necesidad de detección de bordes para anomalías de sistema más bruscas.
     \item Los parámetros \texttt{threshold} (rango [-66.8, -67.7]) y \texttt{decay} (rango [73.6-139.8]) emergen como los más influyentes según las optimizaciones de Optuna, seguidos de \texttt{kernel\_size} y \texttt{sigma}, confirmando la importancia de la dinámica neuronal LIF.
     \item Los modelos TSFEDL (OhShuLih, KhanZulfiqar, ZhengZhenyu) superan consistentemente a las SNN en ambos datasets, con diferencias más pronunciadas en IOPS debido al extremo desbalanceo que las SNN no logran manejar efectivamente.
 \end{itemize}
@@ -71,7 +69,6 @@ El modelo híbrido es aplicable a escenarios de edge computing al reducir cómpu
     \item \textbf{Particionado 50/50}: Falta de validación cruzada temporal podría introducir sesgos en generalización.
     \item \textbf{Estimación energética indirecta}: No se dispuso de medición real de consumo en hardware neuromórfico (solo estimaciones analíticas de MACs).
     \item \textbf{Escalabilidad multivariante}: Experimentos centrados principalmente en señales univariadas (o pocas variables); falta evaluación en entornos fuertemente multivariados.
-    \item \textbf{Número de trials}: 100 trials por configuración pueden ser insuficientes para explorar completamente el espacio hiperparamétrico, especialmente en el caso de IOPS donde la convergencia fue problemática debido al extremo desbalanceo.
     \item \textbf{GPU}: Uno de los motivos para seleccionar \texttt{BindsNET} fue la posibilidad de aprovechar aceleración GPU; sin embargo, la imposibilidad de disponer de una configuración estable de dicha aceleración (incompatibilidades de dependencias en Windows) incrementó la duración de los entrenamientos y restringió la amplitud de la exploración de hiperparámetros. Esto podría implicar que combinaciones óptimas no hayan sido completamente identificadas. No obstante, dado que todos los modelos se ejecutaron bajo condiciones homogéneas (CPU) y que el preprocesamiento fue uniforme, la validez interna de la comparación se mantiene. Futuros trabajos sobre un entorno Linux con soporte CUDA habilitado permitirán ampliar la búsqueda y evaluar la robustez frente a una exploración más exhaustiva.
 \end{itemize}
 
@@ -79,12 +76,11 @@ El modelo híbrido es aplicable a escenarios de edge computing al reducir cómpu
 \begin{itemize}
     \item \textbf{Interna}: Expansión de etiquetas podría inflar artificialmente el recall si no se aplica consistentemente en inferencia.
     \item \textbf{Externa}: Datasets (IOPS, CalIt2) pueden no representar toda la diversidad industrial (ciclos estacionales largos, variabilidad contextual).
-    \item \textbf{Constructo}: Uso de F1 como métrica principal ignora costo desigual de FP vs FN en ciertos dominios (seguridad vs disponibilidad).
-    \item \textbf{Conclusión}: Comparaciones con TSFEDL limitadas a cuatro modelos específicos (OhShuLih, KhanZulfiqar, ZhengZhenyu, WeiXiaoyan), sin acceso a mediciones de tiempo de inferencia o consumo energético de los baselines.
+    \item \textbf{Conclusión}: Comparaciones con TSFEDL limitadas a cuatro modelos específicos (OhShuLih, KhanZulfiqar, ZhengZhenyu, WeiXiaoyan), sin acceso a mediciones de consumo energético de los baselines.
 \end{itemize}
 
 \section{Conclusiones finales}
-En síntesis, este trabajo ha demostrado que las arquitecturas híbridas SNN-CNN, aunque no superan consistentemente a los métodos de deep learning tradicionales en términos de F1-score, ofrecen un compromiso interesante entre rendimiento y eficiencia computacional. La arquitectura propuesta logró F1-scores de 0.418 en CalIt2, manteniéndose competitiva en datasets moderadamente balanceados, mientras que en IOPS reveló las limitaciones inherentes de las SNN para manejar desbalanceos extremos.
+En síntesis, este trabajo ha demostrado que las arquitecturas híbridas SNN-CNN, aunque no superan consistentemente a los métodos de deep learning tradicionales en términos de F1-score, ofrecen un compromiso interesante entre rendimiento y eficiencia computacional. La arquitectura propuesta logró F1-scores de 0.418 en CalIt2, manteniéndose competitiva en datasets moderadamente balanceados, mientras que en IOPS mostró mejoras significativas respecto al modelo SNN base (4.6x) pero mantuvo limitaciones frente a métodos tradicionales en escenarios de desbalanceo extremo.
 
 La optimización bayesiana con Optuna demostró ser una herramienta fundamental para la parametrización fina de arquitecturas SNN complejas, permitiendo explorar sistemáticamente el espacio de hiperparámetros neuronales y convolucionales. Los tiempos de inferencia de 12-15 ms por ventana posicionan al modelo como viable para aplicaciones de tiempo real en edge computing, especialmente cuando se despliegue en hardware neuromórfico dedicado donde las ventajas energéticas de la sparsity pueden ser plenamente aprovechadas.
 
