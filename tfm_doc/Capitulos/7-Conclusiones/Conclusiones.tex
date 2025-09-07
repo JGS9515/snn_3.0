@@ -1,7 +1,4 @@
 \chapter{Conclusiones}
-Aquí añadimos las conclusiones del proyecto
-Trabajos futuros
-\section{Conclusiones Generales}
 
 \section{Resumen del trabajo desarrollado}
 Este Trabajo Fin de Máster ha abordado el problema de la detección de anomalías en series temporales mediante arquitecturas basadas en Redes Neuronales de Impulsos (SNN), proponiendo una extensión híbrida SNN-CNN optimizada automáticamente con Optuna. Se utilizaron dos datasets de características diferentes: IOPS (altamente desbalanceado, 1.92\% anomalías) y CalIt2 (moderadamente balanceado, 24.80\% anomalías), aplicando un pipeline de preprocesamiento que incluye cuantización dinámica por cuantiles expandidos, expansión de etiquetas para mitigar el desbalanceo temporal, y segmentación en ventanas de longitud T=250. La arquitectura propuesta (A--B--C) integra una capa convolucional parametrizable con kernels gaussiano, laplaciano, mexican hat y box, junto con modos de fusión direct, weighted\_sum y max. Se empleó F1-score como métrica principal de evaluación, comparando contra el modelo SNN base (A--B) y baselines de TSFEDL. La motivación energética del trabajo se fundamenta en el potencial de las SNNs para computación neuromórfica eficiente, aprovechando la sparsity inherente a los patrones de impulsos discretos.

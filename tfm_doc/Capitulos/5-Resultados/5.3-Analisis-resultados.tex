@@ -164,9 +164,9 @@ Observaciones:
 \subsection{Resumen}
 Los hallazgos clave del análisis experimental son:
 \begin{itemize}
-    \item \textbf{Rendimiento diferenciado por dataset}: CalIt2 mostró F1-scores estables (0.417-0.418) en la SNN híbrida vs F1≈0.061 en SNN base, mientras que IOPS mostró mejoras substanciales con la capa convolucional (F1=0.277 vs 0.061), evidenciando que el beneficio de la hibridación depende del grado de desbalanceo.
-    \item \textbf{Efectividad de la capa convolucional**: La arquitectura híbrida demostró mejoras significativas: 6.8x en CalIt2 (0.418 vs 0.061) y 4.6x en IOPS (0.277 vs 0.061), confirmando el valor de la integración CNN-SNN, especialmente en datasets desbalanceados.
+    \item \textbf{Rendimiento diferenciado por dataset}: CalIt2 mostró F1-scores estables (0.417--0.418) en la SNN híbrida vs F1=0.061 en SNN base, mientras que IOPS mostró mejoras substanciales con la capa convolucional (F1=0.277 vs 0.061), evidenciando que el beneficio de la hibridación depende del grado de desbalanceo.
+    \item \textbf{Efectividad de la capa convolucional}: La arquitectura híbrida demostró mejoras significativas: 6.8x en CalIt2 (0.418 vs 0.061) y 4.6x en IOPS (0.277 vs 0.061), confirmando el valor de la integración CNN-SNN, especialmente en datasets desbalanceados.
     \item \textbf{Selección óptima de kernels}: Optuna seleccionó consistentemente kernels \texttt{mexican\_hat} y \texttt{gaussian} con procesamiento \texttt{direct}, sugiriendo preferencia por suavizado espacial sobre detección de bordes.
-    \item \textbf{Eficiencia computacional**: Las SNN presentan potencial para aplicaciones de tiempo real debido a la sparsity inherente de los impulsos discretos, con ventajas teóricas en eficiencia energética que requieren validación en hardware neuromórfico.
+    \item \textbf{Eficiencia computacional}: Las SNN presentan potencial para aplicaciones de tiempo real debido a la \textit{sparsity} inherente de los impulsos discretos, con ventajas teóricas en eficiencia energética que requieren validación en hardware neuromórfico.
     \item \textbf{Competitividad con TSFEDL}: Los baselines TSFEDL mantienen ventaja sobre las SNN, pero la brecha se redujo significativamente con la capa convolucional: IOPS (F1=0.436 vs 0.277) y CalIt2 (F1=0.704 vs 0.418), demostrando el potencial de las arquitecturas híbridas SNN-CNN.
 \end{itemize}

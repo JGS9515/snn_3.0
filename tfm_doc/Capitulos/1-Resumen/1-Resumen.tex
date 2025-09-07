@@ -1,5 +1,4 @@
-\chapter*{Resumen}
-\addcontentsline{toc}{chapter}{Resumen}
+\chapter{Resumen}
 
 \section{Resumen}
 
@@ -7,7 +6,7 @@ La detección de anomalías en series temporales constituye un desafío crítico
 
 Este Trabajo Fin de Máster presenta el desarrollo y optimización de una arquitectura híbrida SNN-CNN (Spiking Neural Network - Convolutional Neural Network) para la detección de anomalías en series temporales, con especial énfasis en la sostenibilidad computacional y la eficiencia energética. Las Redes Neuronales de Impulsos (SNNs) emergen como un paradigma prometedor que emula más fielmente el funcionamiento biológico del cerebro, ofreciendo ventajas teóricas en eficiencia energética mediante la sparsity inherente de los impulsos discretos.
 
-La solución propuesta extiende una arquitectura SNN base (A--B) mediante la incorporación de una capa convolucional optimizable (A--B--C) que aplica kernels parametrizables (gaussiano, laplaciano, mexican hat, box) con diferentes modos de procesamiento (direct, weighted\_sum, max). Esta hibridación busca combinar las ventajas de extracción de características espaciales de las redes convolucionales con la eficiencia temporal asíncrona de las SNNs.
+La solución propuesta extiende una arquitectura SNN base (A--B) mediante la incorporación de una capa convolucional optimizable (A--B--C) que aplica kernels parametrizables (gaussiano, laplaciano, mexican hat, box) con diferentes modos de procesamiento (direct, weighted\_sum, max). Esta solución busca combinar las ventajas de extracción de características espaciales de las redes convolucionales con la eficiencia temporal asíncrona de las SNNs.
 
 La metodología experimental empleó optimización bayesiana con Optuna TPE (Tree-structured Parzen Estimator) para la búsqueda sistemática de hiperparámetros, ejecutando 100 trials por configuración en tres escalas de red (100, 200, 400 neuronas). Se implementó un pipeline de preprocesamiento reproducible que incluye cuantización dinámica por cuantiles expandidos, expansión de etiquetas para mitigar el desbalanceo temporal, y segmentación en ventanas de longitud T=250.
 
@@ -29,7 +28,7 @@ Anomaly detection in time series constitutes a critical challenge across multipl
 
 This Master's Thesis presents the development and optimization of a hybrid SNN-CNN (Spiking Neural Network - Convolutional Neural Network) architecture for time series anomaly detection, with special emphasis on computational sustainability and energy efficiency. Spiking Neural Networks (SNNs) emerge as a promising paradigm that more faithfully emulates biological brain functioning, offering theoretical advantages in energy efficiency through the inherent sparsity of discrete spikes.
 
-The proposed solution extends a base SNN architecture (A--B) by incorporating an optimizable convolutional layer (A--B--C) that applies parametrizable kernels (Gaussian, Laplacian, Mexican hat, box) with different processing modes (direct, weighted\_sum, max). This hybridization seeks to combine the spatial feature extraction advantages of convolutional networks with the asynchronous temporal efficiency of SNNs.
+The proposed solution extends a base SNN architecture (A--B) by incorporating an optimizable convolutional layer (A--B--C) that applies parametrizable kernels (Gaussian, Laplacian, Mexican hat, box) with different processing modes (direct, weighted\_sum, max). This solution seeks to combine the spatial feature extraction advantages of convolutional networks with the asynchronous temporal efficiency of SNNs.
 
 The experimental methodology employed Bayesian optimization with Optuna TPE (Tree-structured Parzen Estimator) for systematic hyperparameter search, executing 100 trials per configuration across three network scales (100, 200, 400 neurons). A reproducible preprocessing pipeline was implemented including dynamic quantization by expanded quantiles, label expansion to mitigate temporal imbalance, and segmentation into windows of length T=250.
 
