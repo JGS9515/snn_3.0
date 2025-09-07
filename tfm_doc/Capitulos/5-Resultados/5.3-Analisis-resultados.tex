@@ -19,13 +19,13 @@ Los resultados en el dataset IOPS muestran el desafío de la detección de anoma
 \hline\hline
 \textbf{Modelo} & \textbf{N} & \textbf{Prec} & \textbf{Rec} & \textbf{F1} & \textbf{MSE} \\
 \hline
-SNN (A--B) & 100 & -- & -- & 0.060 & 0.142 \\
-SNN (A--B) & 200 & -- & -- & 0.061 & 0.142 \\
-SNN (A--B) & 400 & -- & -- & 0.062 & 0.142 \\
+SNN (A--B) & 100 & 0.049 & 0.078 & 0.060 & 0.643 \\
+SNN (A--B) & 200 & 0.052 & 0.073 & 0.061 & 0.594 \\
+SNN (A--B) & 400 & 0.054 & 0.073 & 0.062 & 0.581 \\
 \hline
-SNN (A--B--C) & 100 & -- & -- & 0.277 & 0.142 \\
-SNN (A--B--C) & 200 & -- & -- & 0.197 & 0.142 \\
-SNN (A--B--C) & 400 & -- & -- & 0.096 & 0.142 \\
+SNN (A--B--C) & 100 & 0.163 & 0.725 & 0.277 & 0.142 \\
+SNN (A--B--C) & 200 & 0.122 & 0.178 & 0.144 & 0.553 \\
+SNN (A--B--C) & 400 & 0.079 & 0.121 & 0.096 & 0.600 \\
 \hline\hline
 \end{tabular}
 \caption{Resultados de detección de anomalías en dataset IOPS. N representa el número de neuronas en las capas B y C para los modelos SNN. Se muestran los mejores resultados obtenidos tras optimización con Optuna para cada configuración.}
@@ -40,8 +40,8 @@ SNN (A--B--C) & 400 & -- & -- & 0.096 & 0.142 \\
 \hline\hline
 \textbf{Modelo} & \textbf{Prec} & \textbf{Rec} & \textbf{F1} & \textbf{MSE} \\
 \hline
-SNN (A--B) & -- & -- & 0.061 & 0.142 \\
-SNN (A--B--C) & -- & -- & 0.277 & 0.142 \\
+SNN (A--B) & 0.054 & 0.073 & 0.062 & 0.581 \\
+SNN (A--B--C) & 0.163 & 0.725 & 0.277 & 0.142 \\
 TSFEDL-OhShuLih & 0.280 & 0.984 & 0.436 & 0.081 \\
 TSFEDL-KhanZulfiqar & 0.263 & 0.926 & 0.410 & 0.078 \\
 TSFEDL-ZhengZhenyu & 0.265 & 0.931 & 0.412 & 0.095 \\
@@ -67,11 +67,11 @@ Los resultados en el dataset CalIt2 muestran un rendimiento consistente y acepta
 \hline\hline
 \textbf{Modelo} & \textbf{N} & \textbf{Prec} & \textbf{Rec} & \textbf{F1} & \textbf{MSE} \\
 \hline
-SNN (A--B) & 100 & -- & -- & 0.061 & 0.732 \\
-SNN (A--B) & 200 & -- & -- & 0.061 & 0.734 \\
-SNN (A--B) & 400 & -- & -- & 0.062 & 0.730 \\
+SNN (A--B) & 100 & 0.160 & 0.472 & 0.239 & 0.790 \\
+SNN (A--B) & 200 & 0.104 & 0.299 & 0.155 & 0.859 \\
+SNN (A--B) & 400 & 0.083 & 0.239 & 0.124 & 0.892 \\
 \hline
-SNN (A--B--C) & 100 & 0.264 & 0.999 & 0.418 & 0.732 \\
+SNN (A--B--C) & 100 & 0.263 & 1.000 & 0.416 & 0.737 \\
 SNN (A--B--C) & 200 & 0.264 & 1.000 & 0.417 & 0.734 \\
 SNN (A--B--C) & 400 & 0.264 & 0.994 & 0.417 & 0.730 \\
 \hline\hline
@@ -88,7 +88,7 @@ SNN (A--B--C) & 400 & 0.264 & 0.994 & 0.417 & 0.730 \\
 \hline\hline
 \textbf{Modelo} & \textbf{Prec} & \textbf{Rec} & \textbf{F1} & \textbf{MSE} \\
 \hline
-SNN (A--B) & -- & -- & 0.061 & 0.142 \\
+SNN (A--B) & 0.160 & 0.472 & 0.239 & 0.790 \\
 SNN (A--B--C) & 0.264 & 0.999 & 0.418 & 0.732 \\
 TSFEDL-OhShuLih & 0.543 & 1.000 & 0.704 & 0.036 \\
 TSFEDL-KhanZulfiqar & 0.543 & 1.000 & 0.704 & 0.026 \\
@@ -113,60 +113,4 @@ Observaciones:
     \item \textbf{Rendimiento en IOPS}: Los modelos TSFEDL superan a las SNN con F1-scores en el rango 0.380-0.436 vs 0.061-0.277 de las SNN. OhShuLih obtuvo el mejor resultado (F1=0.436), mientras que la mejor SNN híbrida alcanzó F1=0.277, cerrando parcialmente la brecha respecto al modelo SNN base (F1=0.061).
     \item \textbf{Rendimiento en CalIt2}: Los modelos TSFEDL mantienen ventaja con F1-scores de 0.679-0.704 vs 0.061-0.418 de las SNN. La SNN híbrida (F1=0.418) se acerca más a los baselines que en IOPS, pero los tres mejores modelos TSFEDL (F1=0.704) siguen manteniendo una ventaja de 68\%.
     \item \textbf{Eficiencia}: Las SNN mantienen ventajas potenciales en eficiencia computacional debido a la sparsity inherente de los impulsos discretos, aunque la validación empírica de estas ventajas requiere hardware neuromórfico especializado.
-\end{itemize}
-
-\subsection{Importancia de hiperparámetros}
-% TODO: Añadir figuras/tablas de Optuna si se dispone
-\begin{itemize}
-    \item \textbf{Capa convolucional}: impacto de \texttt{kernel\_type}, \texttt{kernel\_size}, \texttt{sigma}.
-    \item \textbf{Procesamiento}: comparación entre \texttt{direct}, \texttt{weighted\_sum}, \texttt{max}.
-    \item \textbf{Neuronales}: sensibilidad a \texttt{threshold} y \texttt{decay}.
-\end{itemize}
-
-\subsection{Eficiencia y escalabilidad}
-% TODO: Rellenar con medidas de tiempo reales
-\begin{itemize}
-    \item \textbf{CPU vs GPU}: \textit{[ganancia observada en entrenamiento e inferencia]}.
-    \item \textbf{Tiempo por ventana T=250}: \textit{[ms/ventana]}.
-    \item \textbf{Memoria}: \textit{[pico de RAM/VRAM]}.
-\end{itemize}
-
-\subsection{Figuras recomendadas}
-% TODO: Sustituir rutas por imágenes reales exportadas del pipeline
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.95\textwidth]{Imagenes/optuna_history_placeholder.png}
-    \caption{Histórico de mejores valores por \textit{trial} (Optuna).}
-    \label{fig:optuna-history}
-\end{figure}
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.95\textwidth]{Imagenes/confusion_matrix_placeholder.png}
-    \caption{Matriz de confusión en \textit{[dataset]} para \textit{[modelo]}.}
-    \label{fig:confusion-matrix}
-\end{figure}
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.95\textwidth]{Imagenes/pr_curve_placeholder.png}
-    \caption{Curva Precisión-Recall comparativa.}
-    \label{fig:pr-curve}
-\end{figure}
-
-\subsection{Amenazas a la validez}
-\begin{itemize}
-    \item \textbf{Particionado}: el uso de split 50/50 temporal puede no capturar todas las variaciones; considerar validación cruzada temporal.
-    \item \textbf{Etiquetado}: expansión de etiquetas puede sesgar la estimación de \textit{recall}; justificar en función del objetivo de alertado temprano.
-    \item \textbf{Recursos}: número limitado de \textit{trials} en Optuna por restricciones de tiempo/cómputo.
-\end{itemize}
-
-\subsection{Resumen}
-Los hallazgos clave del análisis experimental son:
-\begin{itemize}
-    \item \textbf{Rendimiento diferenciado por dataset}: CalIt2 mostró F1-scores estables (0.417--0.418) en la SNN híbrida vs F1=0.061 en SNN base, mientras que IOPS mostró mejoras substanciales con la capa convolucional (F1=0.277 vs 0.061), evidenciando que el beneficio de la hibridación depende del grado de desbalanceo.
-    \item \textbf{Efectividad de la capa convolucional}: La arquitectura híbrida demostró mejoras significativas: 6.8x en CalIt2 (0.418 vs 0.061) y 4.6x en IOPS (0.277 vs 0.061), confirmando el valor de la integración CNN-SNN, especialmente en datasets desbalanceados.
-    \item \textbf{Selección óptima de kernels}: Optuna seleccionó consistentemente kernels \texttt{mexican\_hat} y \texttt{gaussian} con procesamiento \texttt{direct}, sugiriendo preferencia por suavizado espacial sobre detección de bordes.
-    \item \textbf{Eficiencia computacional}: Las SNN presentan potencial para aplicaciones de tiempo real debido a la \textit{sparsity} inherente de los impulsos discretos, con ventajas teóricas en eficiencia energética que requieren validación en hardware neuromórfico.
-    \item \textbf{Competitividad con TSFEDL}: Los baselines TSFEDL mantienen ventaja sobre las SNN, pero la brecha se redujo significativamente con la capa convolucional: IOPS (F1=0.436 vs 0.277) y CalIt2 (F1=0.704 vs 0.418), demostrando el potencial de las arquitecturas híbridas SNN-CNN.
 \end{itemize}
