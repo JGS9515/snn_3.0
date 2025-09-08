@@ -1,6 +1,7 @@
-\chapter{Resumen}
+\chapter*{Resumen}
+\addcontentsline{toc}{chapter}{Resumen}
+\label{chap:resumen}
 
-\section{Resumen}
 
 La detección de anomalías en series temporales constituye un desafío crítico en múltiples sectores industriales, desde la monitorización de redes informáticas hasta el mantenimiento predictivo de infraestructuras críticas. Los métodos tradicionales de detección de anomalías, aunque efectivos, presentan limitaciones significativas en términos de eficiencia energética y escalabilidad, especialmente en aplicaciones de edge computing y dispositivos con recursos limitados.
 
@@ -18,17 +19,17 @@ El análisis de importancia de hiperparámetros confirma que los parámetros neu
 
 Las principales contribuciones del trabajo incluyen: (1) la propuesta de una arquitectura híbrida SNN-CNN optimizable automáticamente, (2) la implementación de un pipeline de preprocesamiento reproducible adaptado a las características de las SNNs, (3) la demostración empírica de que la hibridación mejora significativamente el rendimiento en datasets desbalanceados, y (4) el desarrollo de una metodología de evaluación comparativa que sienta bases para trabajos futuros en el área.
 
-Las limitaciones identificadas incluyen la ejecución en CPU debido a incompatibilidades de dependencias, la imposibilidad de validar empíricamente las ventajas energéticas sin hardware neuromórfico especializado, y el número limitado de trials de optimización por restricciones temporales del proyecto.
-
 Este trabajo demuestra el potencial de las arquitecturas híbridas SNN-CNN para aplicaciones de detección de anomalías, proporcionando un compromiso atractivo entre rendimiento y eficiencia computacional que posiciona a las SNNs como una alternativa viable para aplicaciones de tiempo real en entornos con restricciones energéticas.
 
-\section{Abstract}
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\label{chap:resumen}
 
 Anomaly detection in time series constitutes a critical challenge across multiple industrial sectors, from computer network monitoring to predictive maintenance of critical infrastructures. Traditional anomaly detection methods, while effective, present significant limitations in terms of energy efficiency and scalability, especially in edge computing applications and resource-constrained devices.
 
 This Master's Thesis presents the development and optimization of a hybrid SNN-CNN (Spiking Neural Network - Convolutional Neural Network) architecture for time series anomaly detection, with special emphasis on computational sustainability and energy efficiency. Spiking Neural Networks (SNNs) emerge as a promising paradigm that more faithfully emulates biological brain functioning, offering theoretical advantages in energy efficiency through the inherent sparsity of discrete spikes.
 
-The proposed solution extends a base SNN architecture (A--B) by incorporating an optimizable convolutional layer (A--B--C) that applies parametrizable kernels (Gaussian, Laplacian, Mexican hat, box) with different processing modes (direct, weighted\_sum, max). This solution seeks to combine the spatial feature extraction advantages of convolutional networks with the asynchronous temporal efficiency of SNNs.
+The proposed solution extends a base SNN architecture (A--B) by incorporating an optimizable convolutional layer (A--B--C) that applies parametrizable kernels (gaussian, laplacian, mexican hat, box) with different processing modes (direct, weighted\_sum, max). This solution seeks to combine the spatial feature extraction advantages of convolutional networks with the asynchronous temporal efficiency of SNNs.
 
 The experimental methodology employed Bayesian optimization with Optuna TPE (Tree-structured Parzen Estimator) for systematic hyperparameter search, executing 100 trials per configuration across three network scales (100, 200, 400 neurons). A reproducible preprocessing pipeline was implemented including dynamic quantization by expanded quantiles, label expansion to mitigate temporal imbalance, and segmentation into windows of length T=250.
 
@@ -40,6 +41,5 @@ Hyperparameter importance analysis confirms that neural parameters (threshold, d
 
 The main contributions of this work include: (1) the proposal of an automatically optimizable hybrid SNN-CNN architecture, (2) the implementation of a reproducible preprocessing pipeline adapted to SNN characteristics, (3) the empirical demonstration that hybridization significantly improves performance on imbalanced datasets, and (4) the development of a comparative evaluation methodology that establishes foundations for future work in the area.
 
-Identified limitations include CPU-only execution due to dependency incompatibilities, the inability to empirically validate energy advantages without specialized neuromorphic hardware, and the limited number of optimization trials due to project time constraints.
 
 This work demonstrates the potential of hybrid SNN-CNN architectures for anomaly detection applications, providing an attractive compromise between performance and computational efficiency that positions SNNs as a viable alternative for real-time applications in energy-constrained environments.
