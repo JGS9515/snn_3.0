@@ -3,8 +3,8 @@
 En este capítulo se presentan los escenarios, configuraciones y protocolos empleados para evaluar los modelos de detección de anomalías. Se comparan:
 \begin{itemize}
     \item \textbf{SNN original (A--B)}: implementación base empleada en el trabajo previo.
-    \item \textbf{SNN híbrida (A--B--C)}: modelo propuesto con capa convolucional y búsqueda de hiperparámetros (script \texttt{javi/ejecutar\_experimento\_javi.py}).
-    \item \textbf{Baselines TSFEDL}: modelos seleccionados del repositorio \texttt{@JGS9515/compare\_to\_TSFEDL}\footnote{\url{https://github.com/JGS9515/compare_to_TSFEDL}}.
+    \item \textbf{SNN híbrida (A--B--C)}: modelo propuesto con capa convolucional y búsqueda de hiperparámetros
+    \item \textbf{Baselines TSFEDL}: OhShuLih, KhanZulfiqar, ZhengZhenyu, WeiXiaoyan .
 \end{itemize}
 
 \subsection{Datasets y particionado}
@@ -90,7 +90,7 @@ Además de las listadas en la tabla, el entorno SNN incluye:
     \item[Aprendizaje Profundo / ML:] TensorFlow 2.19.0, Keras 3.10.0, PyTorch Lightning 2.5.2, Torchmetrics 1.7.4
     \item[Visualización:] Matplotlib 3.9.3 (instalada adicionalmente), Pillow 11.0.0, OpenCV 4.10.0.84
     \item[Procesamiento de datos:] SciPy 1.14.1, Scikit-image 0.24.0, NetworkX 3.4.2
-    \item[Monitoreo / Logging:] Weights \& Biases (wandb) 0.21.0, TensorBoard 2.19.0, TensorBoardX 2.6.2.2
+    % \item[Monitoreo / Logging:] Weights \& Biases (wandb) 0.21.0, TensorBoard 2.19.0, TensorBoardX 2.6.2.2
     \item[Utilidades:] Pytest 8.3.4, Rich 14.0.0, TQDM 4.67.1, Requests 2.32.3
     \item[Dominio de señales:] ObsPy 1.4.2 (sísmica), WFDB 4.3.0 (biomédica), SoundFile 0.13.1 (audio)
 \end{description}
@@ -124,14 +124,6 @@ Para cada tamaño $N_B$ se ejecutaron \textbf{100 ensayos} (trials) de optimizac
     \item Métrica objetivo: Minimización de $-\max(F1_B, F1_C)$, priorizando la mejor sinergia entre la capa recurrente y la capa convolucional adaptativa.
 \end{itemize}
 
-\paragraph{Espacio de hiperparámetros} (ejemplo resumido):
-\begin{itemize}
-    \item Plasticidad STDP: $\nu_1, \nu_2 \in [-0.5, 0.5]$.
-    \item Dinámica LIF: \texttt{threshold} $\in [-65, -50]$, \texttt{decay} $\in [80, 150]$.
-    \item Kernel convolucional: tipo $\in \{\texttt{gaussian}, \texttt{laplacian}, \texttt{mexican\_hat}, \texttt{box}\}$, tamaño impar $\in \{3,5,7,9\}$, $\sigma \in [0.5, 3.0]$.
-    \item Normalización y balance: \texttt{norm\_factor} $\in [0.1,1.0]$, \texttt{exc\_inh\_balance} $\in [-0.3,0.3]$.
-    \item Modo de fusión de salidas: \texttt{direct}, \texttt{weighted\_sum}, \texttt{max}.
-\end{itemize}
 
 \paragraph{Justificación de 100 trials por configuración:}
 \begin{enumerate}
