@@ -1,0 +1,37 @@
+{
+    "trial_number": 1,
+    "error": "Trial failed during execution",
+    "exception_type": "RuntimeError",
+    "exception_message": "Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cpu!",
+    "exception_traceback": "Traceback (most recent call last):\n  File \"c:\\Users\\Javier\\Documents\\GitHub\\snn_3.0\\javi\\ejecutar_experimento_javi.py\", line 474, in objective\n    mse_B, mse_C, f1_B, precision_B, recall_B, f1_C, precision_C, recall_C, best_f1 = experiment(\n  File \"c:\\Users\\Javier\\Documents\\GitHub\\snn_3.0\\javi\\ejecutar_experimento_javi.py\", line 221, in experiment\n    spikes_input,spikes,spikes_conv,network=ejecutar_red(\n  File \"c:\\Users\\Javier\\Documents\\GitHub\\snn_3.0\\javi\\utils.py\", line 532, in ejecutar_red\n    network.run(inputs=inputs, time=T)\n  File \"C:\\Users\\Javier\\Documents\\GitHub\\snn_3.0\\venv\\lib\\site-packages\\bindsnet\\network\\network.py\", line 357, in run\n    self.layers[l].forward(x=current_inputs[l])\n  File \"C:\\Users\\Javier\\Documents\\GitHub\\snn_3.0\\venv\\lib\\site-packages\\bindsnet\\network\\nodes.py\", line 504, in forward\n    self.v = self.decay * (self.v - self.rest) + self.rest\nRuntimeError: Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cpu!\n",
+    "parameters": {
+        "nu1": -0.250919762305275,
+        "nu2": 0.9014286128198323,
+        "threshold": -51.70015145471487,
+        "decay": 139.7987726295555,
+        "kernel_type": "box",
+        "kernel_size": 3,
+        "sigma": 1.9428287191077893,
+        "norm_factor": 4.178968939922067,
+        "exc_inh_balance": -0.11506435572868955,
+        "conv_processing_type": "max"
+    },
+    "conv_params": {
+        "kernel_type": "box",
+        "kernel_size": 3,
+        "sigma": 1.9428287191077893,
+        "norm_factor": 4.178968939922067,
+        "exc_inh_balance": -0.11506435572868955
+    },
+    "conv_processing_type": "max",
+    "best_f1": 0.0,
+    "mse_B": null,
+    "mse_C": null,
+    "f1_B": null,
+    "precision_B": null,
+    "recall_B": null,
+    "f1_C": null,
+    "precision_C": null,
+    "recall_C": null,
+    "failure_reason": "Exception during experiment execution"
+}

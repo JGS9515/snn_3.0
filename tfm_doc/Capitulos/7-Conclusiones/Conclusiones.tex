@@ -54,7 +54,7 @@ Los patrones observados en la selección de kernels sugieren preferencias espec�
 En CalIt2, Optuna seleccionó consistentemente kernels \texttt{mexican\_hat} y \texttt{gaussian} con tamaños intermedios (5-7), indicando que el suavizado espacial y la detección de transiciones graduales son más efectivos que la detección de bordes abruptos para este tipo de señales de flujo de edificios. El kernel \texttt{mexican\_hat}, al combinar un componente central positivo con anillos negativos, permite detectar cambios locales preservando el contexto temporal, mientras que el kernel \texttt{gaussian} atenúa el ruido impulsivo manteniendo las características principales de la señal.
 
 \subsection{Implicaciones prácticas}
-El modelo híbrido desarrollado presenta potencial para aplicaciones reales de mantenimiento predictivo y monitorización IoT, especialmente en entornos con restricciones energéticas. Los tiempos de inferencia de 12-15 ms por ventana de 250 muestras permiten procesamiento en tiempo real, mientras que la arquitectura basada en impulsos discretos es inherentemente compatible con hardware neuromórfico de bajo consumo. En el contexto de mantenimiento predictivo, el alto recall observado (99.9\% en CalIt2) es crucial para evitar fallos no detectados, aunque la baja precisión requiere sistemas de post-procesado para reducir falsas alarmas.
+El modelo híbrido desarrollado presenta potencial para aplicaciones reales de mantenimiento predictivo y monitorización IoT, especialmente en entornos con restricciones energéticas. La arquitectura basada en impulsos discretos es inherentemente compatible con hardware neuromórfico de bajo consumo y su naturaleza sparse sugiere potencial para procesamiento eficiente, aunque sería necesario realizar mediciones específicas de rendimiento temporal para validar su viabilidad en aplicaciones de tiempo real. En el contexto de mantenimiento predictivo, el alto recall observado (99.9\% en CalIt2) es crucial para evitar fallos no detectados, aunque la baja precisión requiere sistemas de post-procesado para reducir falsas alarmas.
 
 El modelo híbrido es aplicable a escenarios de edge computing al reducir cómputo mediante sparsity, siempre que se complemente con:
 \begin{itemize}
@@ -62,7 +62,7 @@ El modelo híbrido es aplicable a escenarios de edge computing al reducir cómpu
     \item Ajustes de umbrales adaptativos según distribución reciente de actividad neuronal.
 \end{itemize}
 
-\section{Limitaciones y amenazas a la validez}
+\section{Limitaciones y consideraciones de validez}
 \subsection{Limitaciones experimentales}
 \begin{itemize}
     \item \textbf{Particionado 50/50}: Falta de validación cruzada temporal podría introducir sesgos en generalización.
@@ -71,57 +71,54 @@ El modelo híbrido es aplicable a escenarios de edge computing al reducir cómpu
     \item \textbf{GPU}: Uno de los motivos para seleccionar \texttt{BindsNET} fue la posibilidad de aprovechar aceleración GPU; sin embargo, la imposibilidad de disponer de una configuración estable de dicha aceleración (incompatibilidades de dependencias en Windows) incrementó la duración de los entrenamientos y restringió la amplitud de la exploración de hiperparámetros. Esto podría implicar que combinaciones óptimas no hayan sido completamente identificadas. No obstante, dado que todos los modelos se ejecutaron bajo condiciones homogéneas (CPU) y que el preprocesamiento fue uniforme, la validez interna de la comparación se mantiene. Futuros trabajos sobre un entorno Linux con soporte CUDA habilitado permitirán ampliar la búsqueda y evaluar la robustez frente a una exploración más exhaustiva.
 \end{itemize}
 
-\subsection{Amenazas a la validez}
+\subsection{Consideraciones de validez}
 \begin{itemize}
     \item \textbf{Interna}: Expansión de etiquetas podría inflar artificialmente el recall si no se aplica consistentemente en inferencia.
     \item \textbf{Externa}: Datasets (IOPS, CalIt2) pueden no representar toda la diversidad industrial (ciclos estacionales largos, variabilidad contextual).
-    \item \textbf{Conclusión}: Comparaciones con TSFEDL limitadas a cuatro modelos específicos (OhShuLih, KhanZulfiqar, ZhengZhenyu, WeiXiaoyan), sin acceso a mediciones de consumo energético de los baselines.
+    \item \textbf{Baselines}: Comparaciones con TSFEDL limitadas a cuatro modelos específicos (OhShuLih, KhanZulfiqar, ZhengZhenyu, WeiXiaoyan), sin acceso a mediciones de consumo energético de los baselines.
 \end{itemize}
 
 \section{Conclusiones finales}
 En síntesis, este trabajo ha demostrado que las arquitecturas híbridas SNN-CNN, aunque no superan consistentemente a los métodos de deep learning tradicionales en términos de F1-score, ofrecen un compromiso interesante entre rendimiento y eficiencia computacional. La arquitectura propuesta logró F1-scores de 0.417 en CalIt2, manteniéndose competitiva en datasets moderadamente balanceados, mientras que en IOPS mostró mejoras significativas respecto al modelo SNN base (4.6x) pero mantuvo limitaciones frente a métodos tradicionales en escenarios de desbalanceo extremo.
 
-La optimización bayesiana con Optuna demostró ser una herramienta fundamental para la parametrización fina de arquitecturas SNN complejas, permitiendo explorar sistemáticamente el espacio de hiperparámetros neuronales y convolucionales. Los tiempos de inferencia de 12-15 ms por ventana posicionan al modelo como viable para aplicaciones de tiempo real en edge computing, especialmente cuando se despliegue en hardware neuromórfico dedicado donde las ventajas energéticas de la sparsity pueden ser plenamente aprovechadas.
+La optimización bayesiana con Optuna demostró ser una herramienta fundamental para la parametrización fina de arquitecturas SNN complejas, permitiendo explorar sistemáticamente el espacio de hiperparámetros neuronales y convolucionales. El modelo presenta características arquitecturales que sugieren potencial para aplicaciones de edge computing, especialmente cuando se despliegue en hardware neuromórfico dedicado donde las ventajas energéticas de la sparsity pueden ser plenamente aprovechadas, aunque la validación de rendimiento temporal requiere mediciones específicas en futuros trabajos.
 
 La metodología desarrollada sienta bases sólidas para trabajos futuros en detección de anomalías con SNNs, proporcionando un pipeline reproducible de preprocesamiento, optimización y evaluación que puede ser extendido a otros dominios y arquitecturas neuromórficas más avanzadas.
 Estos hallazgos apoyan la hipótesis de que la integración de mecanismos convolucionales y optimización sistemática reduce la brecha entre SNN y enfoques ANN tradicionales para detección de anomalías en series temporales.
 
 \section{Trabajos futuros}
 % Estructurar en líneas de investigación priorizadas.
-\subsection{Optimización técnica}
-\begin{itemize}
-    \item \textbf{Validación cruzada temporal}: Implementar estrategias como rolling-origin o nested backtesting para robustecer la estimación de generalización.
-    \item \textbf{Multiobjetivo}: Extender la optimización con Optuna a objetivos conjuntos (F1 y coste computacional/MACs), empleando algoritmos como NSGA-II.
-    \item \textbf{Umbral adaptativo}: Introducir calibración dinámica (e.g. percentil 95 de actividad normal reciente) para reducir drift.
-    \item \textbf{Codificaciones alternativas}: Evaluar codificación por tasa vs. latencia vs. rank-order para mejorar discriminabilidad temprana.
-\end{itemize}
-
-\subsection{Ampliación de dominios y robustez}
-\begin{itemize}
-    \item Incorporar datasets multivariantes industriales (vibración, temperatura, presión) y comparar rendimiento frente a modelos de atención temporal.
-    \item Evaluar robustez frente a ruido sintético aditivo y drift de distribución (concept drift) aplicando técnicas de continual learning.
-    \item Analizar explicabilidad: mapear contribución de patrones de spikes a decisiones (saliency sobre tiempos).
-\end{itemize}
 
 \subsection{Evaluación energética y despliegue neuromórfico}
 \label{subsec:trabajo-futuro-neuromorfico}
-Una línea prioritaria consiste en la ejecución del modelo en hardware neuromórfico dedicado para validar empíricamente las estimaciones de eficiencia:
+\textbf{Línea prioritaria} para validar empíricamente las estimaciones de eficiencia mediante ejecución en hardware neuromórfico dedicado:
 \begin{itemize}
     \item \textbf{Plataformas candidatas}: Intel Loihi 2, SpiNNaker 2, BrainScaleS-2, chips basados en memristores emergentes.
     \item \textbf{Portado del modelo}: Conversión de parámetros LIF y topología a formato compatible (e.g. NxSDK / Lava para Loihi), sustituyendo operaciones convolucionales por proyecciones locales o \textit{compartment groups}.
     \item \textbf{Métricas energéticas}: Joules por inferencia, mW promedio, latencia por ventana \(T\), escalabilidad en número de neuronas vs. consumo.
+    \item \textbf{Comparativa energética}: Medición directa frente a implementaciones GPU/CPU para cuantificar ventajas reales del paradigma neuromórfico.
 \end{itemize}
 
-\subsection{Integración MLOps y ciclo de vida}
+\subsection{Optimización técnica y robustez}
 \begin{itemize}
-    \item Versionado de datasets y features con herramientas como DVC.
-    \item Monitorización continua de drift y re-entrenamiento disparado por degradación de F1/recall.
-    \item Empaquetado en contenedores ligeros o despliegue sobre microcontroladores con toolchains específicos (TinyML + SNN surrogate).
+    \item \textbf{Validación cruzada temporal}: Implementar estrategias como rolling-origin o nested backtesting para robustecer la estimación de generalización.
+    \item \textbf{Optimización multiobjetivo}: Extender la optimización con Optuna a objetivos conjuntos (F1 y coste computacional/MACs), empleando algoritmos como NSGA-II.
+    \item \textbf{Datasets multivariantes industriales}: Incorporar señales de vibración, temperatura y presión para validar aplicabilidad en mantenimiento predictivo real.
+    \item \textbf{Robustez frente a drift}: Evaluar degradación de rendimiento bajo concept drift y noise injection, implementando técnicas de continual learning específicas para SNNs.
 \end{itemize}
 
-\subsection{Líneas exploratorias adicionales}
+\subsection{Despliegue y monitorización neuromórfica}
+Integración específica para sistemas SNN en producción:
 \begin{itemize}
-    \item \textbf{Aprendizaje supervisado híbrido}: Incorporar cabezas clasificadoras ANN ligeras sobre representaciones SNN para comparar supervisado vs. autoorganizado.
-    \item \textbf{Plasticidad avanzada}: Evaluar reglas triplet-STDP, homeostasis sináptica y modulación dopaminérgica para estabilizar el aprendizaje continuo.
-    \item \textbf{Reducción de dimensionalidad previa}: Análisis de PCA/autoencoders para reducir ruido antes de la codificación a spikes.
+    \item \textbf{Monitorización de sparsity}: Tracking continuo de patrones de actividad neuronal para detectar degradación de eficiencia o drift de comportamiento.
+    \item \textbf{Re-calibración de umbrales}: Ajuste automático de thresholds neuronales basado en distribución reciente de spikes para mantener sensitividad sin re-entrenamiento completo.
+    \item \textbf{Despliegue edge}: Empaquetado optimizado para microcontroladores con soporte SNN nativo (e.g. neuromorphic inference engines) incluyendo cuantización de parámetros sinápticos.
+    \item \textbf{Pipeline neuromórfico}: Versionado de topologías de red y pesos sinápticos con herramientas específicas para arquitecturas spike-based.
+\end{itemize}
+
+\subsection{Aplicabilidad práctica}
+\begin{itemize}
+    \item \textbf{Sistemas híbridos SNN-ANN}: Implementar capas de post-procesado tradicionales sobre representaciones SNN para mejorar precisión manteniendo eficiencia en inferencia.
+    \item \textbf{Análisis de explicabilidad}: Desarrollar técnicas de interpretación específicas para patrones temporales de spikes en el contexto de detección de anomalías.
+    \item \textbf{Optimización de codificación}: Evaluar impacto de diferentes estrategias de cuantización temporal y espacial en la calidad de representación y eficiencia computacional.
 \end{itemize}

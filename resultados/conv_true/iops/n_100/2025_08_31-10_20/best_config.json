@@ -1,0 +1,29 @@
+{
+    "best_params": {
+        "nu1": -0.250919762305275,
+        "nu2": 0.9014286128198323,
+        "threshold": -51.70015145471487,
+        "decay": 139.7987726295555,
+        "kernel_type": "box",
+        "kernel_size": 3,
+        "sigma": 1.9428287191077893,
+        "norm_factor": 4.178968939922067,
+        "exc_inh_balance": -0.11506435572868955,
+        "conv_processing_type": "max"
+    },
+    "best_trial": 1,
+    "snn_process_layer_neurons_size": 100,
+    "device": "cuda",
+    "use_conv_layer": true,
+    "best_f1": 0.0,
+    "best_objective": 1.0,
+    "total_trials": 1,
+    "completed_trials": 0,
+    "failed_trials": 0,
+    "pruned_trials": 0,
+    "amoumt_of_trials": 1,
+    "duration_seconds": 247.925559,
+    "start_time": "2025-08-31T10:20:41.065104",
+    "end_time": "2025-08-31T10:24:48.990663",
+    "success_rate": 0.0
+}

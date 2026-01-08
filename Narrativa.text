@@ -1,0 +1,171 @@
+La tendencia actual es 'más es mejor': modelos más grandes, más GPUs y datacenters del tamaño de estadios de fútbol. Pero esto tiene un coste oculto inmenso: el consumo energético. Se estima que el entrenamiento y uso de estos modelos consume tanta electricidad como países enteros.  Estamos ante una crisis de sostenibilidad digital.
+
+Sin embargo, en un mundo más allá de chat GPT, tenemos limitaciones diferentes. En una fábrica, en un dron o vehículos autónomos. En estos escenarios existen sensores que generan un gran volumen de datos a muy alta velocidad, donde muchas veces es imprescindible tomar acción rápida (luego de detectar picos inusuales, cambios de tendencias, alteraciones periódicas, vamos alguna anomalía) no solo carecemos de superordenadores, sino que nos enfrentamos a dos enemigos invisibles: la latencia y el ancho de banda.
+
+Aquí es donde la tendencia de más es mejor y redes neuronales artificiales (método tradicional) y el Deep Learning  falla: es demasiado pesado para procesar 'in situ' y demasiado lento si depende de la nube.
+
+Por eso, mi trabajo propone un cambio de paradigma. En lugar de fuerza bruta, buscamos eficiencia, en este caso imitando el sistema de comunicación del cerebro. Para ello utilizamos Redes Neuronales de Impulsos (SNNs).
+
+Para ello se hizo una revisión bibliográfica exhaustiva, se hizo un diseño de SNN pensado en la eficiencia energética sin sacrificar resultados en la detección de anomalías en  series temporales. Una vez implementada la solución se validó con datasets reales y se comparó con modelos tradicionales de deep learning.
+
+Para comprender la base de nuestra propuesta, es fundamental distinguir diferencias entre las Redes Neuronales Artificiales clásicas (ANNs) y las Redes Neuronales de Impulsos (SNNs). Aunque ambas se inspiran en el cerebro, funcionan de manera radicalmente distinta. He resumido estas diferencias en cuatro pilares clave:
+
+Comunicación:
+
+Las redes tradicionales se comunican mediante valores continuos (números como 0.87 o 0.34) que viajan constantemente entre neuronas.
+
+En cambio, las SNNs utilizan impulsos discretos (spikes): la neurona dispara o no dispara o sea es un evento binario.
+
+Analogía: Podríamos ver una ANN como un termostato analógico que ajusta la temperatura gradualmente, mientras que una SNN funciona más como el código Morse: transmite información mediante pulsos breves y silencios.
+
+Información Temporal:
+
+En una red clásica, el tiempo es irrelevante; solo importa el valor numérico final.
+
+En las SNNs, el tiempo es información. No solo importa si hay un impulso, sino cuándo ocurre exactamente. Esto nos permite codificar datos en la latencia o en la frecuencia de disparo, capturando dinámicas temporales de forma nativa.
+
+Activación (Eficiencia):
+
+Las redes tradicionales son computacionalmente densas: todas las neuronas procesan y transmiten valores en cada paso de propagación.
+
+Una neurona SNN permanece inactiva y no consume recursos hasta que recibe un impulso. Si no hay evento, no hay gasto. Esto es lo que les da su gran ventaja de eficiencia energética.
+
+Operaciones Matemáticas:
+
+Finalmente, a nivel de hardware, una ANN depende de multiplicaciones de matrices intensivas, que son costosas en poder de cómputo y en energía.
+
+Una SNN, al trabajar con impulsos (1 o 0), convierte esas multiplicaciones complejas en simples operaciones de acumulación (sumas) y comparaciones.
+
+En resumen, pasamos de un modelo de cálculo intensivo y continuo a uno basado en eventos, asíncrono y mucho más ligero, ideal para entornos con recursos limitados.
+
+Entendidas estas diferencias conceptuales, hablemos un poco de implementación:
+
+Para este proyecto, hemos elegido el Modelo LIF (Leaky Integrate-and-Fire) que además de ser el más utilizado por la comunidad, encaja perfectamente con nuestras necesidades.
+
+Para comprender mejor este modelo, he creado un gráfico que simula su funcionamiento. En el eje y podemos observar el voltaje donde el límite inferior es -65 (que es el voltaje en reposo definido para este ejemplo) y la línea verde es el voltaje límite en -65 que es el umbral a superar para realizar un disparo. En el eje x los eventos. Como podemos observar el primer evento recibe un impulso lo suficientemente estimulante como para realizar un disparo, nótese como en el mismo paso luego de realizar el disparo se vuelve al voltaje de reposo. En el segundo evento se recibe un impulso que hace que la neurona acumule un poco de voltaje pero no el suficiente como para disparar. En el tercer evento no recibe ningún iimpulso por lo que la neurona pierde un poco de voltaje debido a la fuga. Y el último evento es lo suficientemente fuerte como para superar el voltaje límite una vez más (debido a que la neurona todavía acumulaba milivoltios de eventos anteriores que todavía no se había fugado del todo), se realiza un disparo y se vuelve al voltaje de reposo.
+
+Para el desarrollo del TFM, partimos de una arquitectura SNN previamente implementada.
+
+Es un modelo Bi capa A-B, donde la capa de entrada tiene 39 neuronas, codificación por cuantiles para transformar la señal de entrada en impulsos.
+
+Capa B (procesamiento): 100 neuronas LIF con conexiones recurrentes.
+
+El entrenamiento de la red se realiza mediante una variante de STDP diseñada específicamente para la tarea de detección de anomalías. A diferencia del STDP clásico, donde se refuerzan conexiones que conducen a disparos postsinápticos inmediatos, aquí se emplea una estrategia de penalización.
+
+Para ello, configuramos las sinapsis para que reduzcan su actividad ante patrones conocidos.
+
+Básicamente, enseñamos a la red a 'estar callada' cuando ve algo normal.
+
+Por tanto, la detección de anomalías se basa en la hiperactividad: si la red empieza a disparar muchos impulsos, significa que está viendo algo que no reconoce, y se genera una alerta.
+
+La arquitectura base es totalmente conectada: cada neurona de procesamiento recibe toda la entrada simultáneamente. Como consecuencia, la red no puede extraer características jerárquicas (por ejemplo, detectar primero bordes, luego formas y finalmente patrones complejos), como lo hacen las redes profundas modernas. Esto limita la captura de patrones temporales sutiles o estructuras específicas dentro de la serie temporal.
+
+Sensibilidad a hiperparámetros: Requiere un ajuste manual intensivo y propenso a errores.
+
+Rendimiento limitado ante ruido: La ausencia de un pre-procesamiento de características hace que el modelo sea vulnerable a datos ruidosos o mal configurados.
+
+Estas limitaciones impulsaron la necesidad de una arquitectura más robusta y adaptativa.
+
+Como parte de mi solución se encuentra la adición de una tercera capa al modelo.
+
+La Capa C recibe los impulsos que ya han sido 'procesados' temporalmente por la Capa B. Funciona como un filtro de refinamiento: mientras B captura la dinámica del tiempo, C limpia la señal, resalta patrones locales. En general mejora la capacidad de extracción de características del modelo.
+
+Habiendo detectado el ajuste manual como una gran limitación. La capa C es 100% configurable.
+
+Kernels:
+
+Gaussian: Ideal : Suaviza la señal temporal, reduciendo el ruido y facilitando la detección de tendencias generales.
+
+Mexican Hat:: Detecta patrones específicos en el centro de la ventana mientras ignora la información de los bordes, enfocándose solo en lo más relevante..
+
+ Laplacian: Utiles para identificar cambios bruscos o picos repentinos.
+
+Box: Para un promediado simple y eficiente, siendo computacionalmente eficiente para operaciones básicas de filtrado.
+
+Modos de procesamiento
+
+Direct: Usa directamente la salida filtrada de C.
+
+Weighted Sum (Suma Ponderada): Combina matemáticamente la señal pura de B y la filtrada de C (ej. 30% B + 70% C).
+
+Max: Selecciona la activación más fuerte entre ambas capas
+
+Este diagrama muestra el flujo completo de nuestro sistema. El proceso se divide en cuatro etapas principales que voy a explicar de forma secuencial. 
+
+Comenzamos con los datos en formato CSV que contienen las series temporales. 
+
+El preprocesado incluye la normalización de los valores y el manejo de datos faltantes para asegurar la calidad de la entrada.
+
+La codificación, que transforma los valores numéricos continuos en impulsos discretos mediante cuantización. Se divide el rango de valores en intervalos (cuantiles), y cada intervalo corresponde a una neurona en la capa A. Por ejemplo, si creamos 150 intervalos, la capa A tendrá 150 neuronas, cada una especializada en detectar un rango específico de valores. 
+
+Agrupamiento temporal, que divide los datos en ventanas de 250 muestras, permitiendo que la red procese la información de manera secuencial y capture patrones temporales.
+
+La capa A recibe los impulsos ya codificados (0s y 1s) y los "inyecta" en la capa B. Mantiene un historial de actividad reciente necesario para el aprendizaje STDP
+y transmite los impulsos a la Capa B a través de conexiones sinápticas con pesos aprendibles.
+
+La Capa B de procesamiento es el núcleo de la red neuronal de impulsos. Utiliza neuronas LIF que procesan los impulsos y aprenden patrones mediante reglas de plasticidad sináptica. Esta capa puede detectar anomalías directamente.
+
+La Capa C convolucional es de procesamiento que aplica filtros convolucionales para detectar patrones locales más complejos.
+
+En la fase de entrenamiento, la red aprende a distinguir entre comportamiento normal y anómalo. Los datos se procesan secuencia por secuencia, y los pesos sinápticos se ajustan automáticamente mediante aprendizaje no supervisado.
+
+En la fase de prueba, evaluamos el rendimiento del modelo entrenado con datos que no ha visto antes, generando predicciones sobre qué puntos son anómalos.
+
+Los resultados se guardan incluyendo los impulsos generados por cada capa (sirve para Analizar el comportamiento interno de la red y comparar los resultados de la capa B con la capa C), las etiquetas originales del dataset (para evaluar si el modelo acierta) y las predicciones del modelo.
+
+Finalmente, calculamos las métricas de evaluación como precisión (De todo lo que predije como anomalía, ¿cuánto realmente lo era?), recall (De todas las anomalías reales, ¿cuántas detecté?) y F1-score (Balance entre precisión y recall (media de ambas)) para cuantificar qué tan bien funciona nuestro modelo.
+
+Cuando mostramos la capa convolucional, mostramos como nativamente fue implementada para que sus parámetros fueran fácilmente configurables.
+
+En este paso buscamos tanto encontrar los mejores valores posibles tanto para los parámetros de la capa c como para el resto del modelo base.
+
+Para ello implementamos un sistema de optimización automática de hiperparámetros. En lugar de ajustar manualmente los parámetros de la red neuronal, utilizamos Optuna, un framework de optimización bayesiana que explora de forma inteligente el espacio de búsqueda para encontrar la configuración que maximiza el F1-score. Optuna funciona cuenta con varias fases. 
+ Fase inicial: Realiza evaluaciones aleatorias para obtener datos iniciales sobre el espacio de búsqueda.
+Modelado probabilístico: Divide los resultados en dos grupos según un umbral de rendimiento. Construye un modelo de probabilidad para los parámetros que dieron buenos resultados y otro para los que dieron malos resultados.
+Selección informada: Propone nuevos parámetros maximizando la razón entre la probabilidad de pertenecer al grupo bueno frente al malo. Esto concentra la búsqueda en regiones prometedoras.
+
+Los parámetros neuronales controlan el comportamiento de las neuronas LIF en la capa B. El límite o umbral de disparo determina cuándo una neurona genera un impulso; valores más negativos hacen que las neuronas sean más reactivas. La fuga controla la velocidad con la que la neurona olvida su estado previo, funcionando como una constante de memoria temporal. nu1 (A→B), nu2 (A→B y/o B→C): Tasas de aprendizaje STDP. Controlan cómo se actualizan las conexiones sinápticas. Valores negativos fortalecen conexiones, positivos las debilitan.
+
+Parámetros optimizados:
+
+Parámetros neuronales (capa B - neuronas LIF):
+
+límite (threshold): Umbral de disparo de las neuronas. Valores más altos (-50 mV) hacen que la neurona sea más selectiva y necesite mayor activación para disparar. Rango: [-65, -50] mV.
+
+fuga (decay): Constante de decaimiento de la membrana. Valores altos (150) permiten que la neurona "recuerde" información por más tiempo. Rango: [80, 150].
+
+nu1 (A→B), nu2 (A→B y/o B→C): Tasas de aprendizaje STDP. Controlan cómo se actualizan las conexiones sinápticas. Valores negativos fortalecen conexiones, positivos las debilitan. Rango: [-0.5, 0.5].
+
+En el dataset IOPS, que corresponde a métricas de servicios de infraestructura, nuestra arquitectura SNN con tres capas alcanzó un F1-score de 0.277, lo que representa una mejora de 4.6 veces respecto al modelo base de dos capas.
+En CalIt2, un dataset de series temporales de tráfico, obtuvimos un F1-score de 0.417 con un recall del 99.9%. Esto significa que el modelo detecta prácticamente todas las anomalías presentes, lo cual es crítico en aplicaciones donde el coste de no detectar una anomalía es alto.
+
+Respecto a la optimización de kernels, encontramos que los filtros Mexican Hat y Laplacian funcionan mejor para IOPS, mientras que Mexican Hat y Gaussian con tamaños de 5 a 7 destacaron en CalIt2. Esto sugiere que la elección del kernel debe adaptarse a las características de cada dataset.
+
+Si comparamos con el estado del arte, vemos que el modelo TSFEDL-OhShuLih, una red neuronal profunda tradicional, obtiene F1-scores superiores en ambos datasets: 0.436 en IOPS y 0.704 en CalIt2.
+Sin embargo, es importante destacar dos puntos clave:
+Primero, nuestra arquitectura híbrida reduce significativamente la brecha respecto al modelo base. Pasamos de un F1 de 0.062 a 0.277 en IOPS, acercándonos al rendimiento de TSFEDL.
+Segundo, las SNN ofrecen ventajas en eficiencia energética que las redes profundas tradicionales no pueden igualar, lo que las hace especialmente atractivas para aplicaciones en dispositivos edge o sistemas con restricciones de consumo.
+
+Principales hallazgos encontrados:
+Parámetros Neuronales: Los parámetros neuronales, especialmente el límite y la fuga, son los más influyentes en el rendimiento del modelo.
+
+Dinámica del Modelo LIF: La dinámica del modelo LIF (Leaky Integrate-and-Fire) es un factor clave, destacando la importancia de una simulación bioinspirada precisa.
+
+Parámetros Convolucionales: Los parámetros convolucionales tienen un impacto secundario, pero complementan la capacidad de extracción de características del modelo.
+
+Como todo trabajo de investigación, es importante presentar de forma honesta tanto las fortalezas como las limitaciones actuales de nuestra propuesta.
+
+Comenzando por las fortalezas, el alto recall del 99.9% obtenido en CalIt2 es relevante para sistemas de monitoreo crítico, donde el coste de no detectar una anomalía es superior al de generar una falsa alarma.
+
+Respecto al hardware neuromórfico, la naturaleza bioinspirada de las SNN las hace nativamente compatibles con chips como Intel Loihi o IBM TrueNorth, que prometen órdenes de magnitud de mejora en eficiencia energética frente a GPUs tradicionales. Se estima que Intel Loihi 2 ejecuta redes de impulsos con un consumo 100 veces menor al consumo de GPU tradicional.
+
+Esta eficiencia, combinada con su capacidad de procesamiento basado en eventos, hace que las SNN sean candidatas ideales para despliegue en entornos de Edge Computing, donde los recursos computacionales y energéticos son limitados.
+
+La conclusión final es que las arquitecturas híbridas SNN-CNN presentan un equilibrio prometedor entre rendimiento y eficiencia, posicionándose como una solución viable para Edge Computing y entornos con restricciones energéticas en el mantenimiento predictivo.
+
+Para cerrar, quiero presentar brevemente las cuatro líneas principales de trabajo futuro que se derivan de esta investigación.
+
+Primero, validar la arquitectura en hardware neuromórfico.
+Segundo, cuantificar las métricas energéticas reales: Joules por inferencia y consumo promedio en milivatios, para respaldar con datos las ventajas teóricas que mencionamos.
+Tercero, implementar optimización multiobjetivo con algoritmos como NSGA-II (es un algoritmo para optimización multiobjetivo), que permitan encontrar el mejor equilibrio entre rendimiento (F1-score) y coste computacional (MACs).
+Y cuarto, extender la validación a datasets industriales reales con señales de vibración, temperatura y presión, más cercanos a aplicaciones de mantenimiento predictivo.

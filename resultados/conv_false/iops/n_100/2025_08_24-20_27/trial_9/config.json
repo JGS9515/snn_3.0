@@ -1,0 +1,16 @@
+{
+    "nu1": -0.3008541452469722,
+    "nu2": -0.34346319099967926,
+    "threshold": -52.241751130282736,
+    "decay": 145.02257964700541,
+    "mse_B": 0.5944761904761905,
+    "f1_B": 0.0268163392578734,
+    "precision_B": 0.02353585112205802,
+    "recall_B": 0.031159420289855074,
+    "mse_C": null,
+    "f1_C": null,
+    "precision_C": null,
+    "recall_C": null,
+    "ssn_input_layer_neurons_size": 24,
+    "snn_process_layer_neurons_size": 100
+}

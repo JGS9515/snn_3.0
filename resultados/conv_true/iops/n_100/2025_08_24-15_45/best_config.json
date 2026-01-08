@@ -1,0 +1,23 @@
+{
+    "best_params": {
+        "nu1": -0.4984693801932173,
+        "nu2": -0.15303760784890985,
+        "threshold": -64.537143554028,
+        "decay": 116.64798457243243,
+        "kernel_type": "laplacian",
+        "kernel_size": 9,
+        "sigma": 0.8541743113026719,
+        "norm_factor": 0.629552829636075,
+        "exc_inh_balance": -0.19187384916558886,
+        "conv_processing_type": "max"
+    },
+    "best_trial": 2,
+    "snn_process_layer_neurons_size": 100,
+    "device": "cpu",
+    "use_conv_layer": true,
+    "best_f1": 0.07396984924623115,
+    "amoumt_of_trials": 10,
+    "duration_seconds": 37.430974,
+    "start_time": "2025-08-24T15:45:08.597471",
+    "end_time": "2025-08-24T15:45:46.028445"
+}

@@ -147,10 +147,10 @@ def expandir(serie, n):
 def podar(x,q1,q2,cuantiles=None):
     #Función que devuelve 1 (spike) si x está en el rango [q1,q2), y 0 en caso contrario.
     #Es parte de la codificación de los datos.
-    
-    s=torch.zeros_like(x)
-    
-    s[(x>=q1) & (x<q2)]=1
+
+    s = torch.zeros_like(x)
+
+    s[(x >= q1) & (x < q2)] = 1
     return s
 
 
@@ -158,31 +158,34 @@ def convertir_data(data, T, cuantiles, snn_input_layer_neurons_size, is_train=Fa
     # Move cuantiles to GPU
     print('convertir_data')
     print(device)
-    
+
     cuantiles = cuantiles.to(device)
-    
-    # Convert series to GPU tensor
-    serie = torch.FloatTensor(data['value']).to(device)
-    
+
+    # Convert series to GPU tensor - use normalized values if available
+    value_column = 'value_normalized' if 'value_normalized' in data.columns else 'value'
+    serie = torch.FloatTensor(data[value_column]).to(device)
+
     #Tomamos la longitud de la serie.
     long=serie.shape[0]
-    
+
     #Los valores inferiores al mínimo del vector de cuantiles se sustituyen por ese mínimo.
-    serie[serie<torch.min(cuantiles)]=torch.min(cuantiles)
-    serie[serie>torch.max(cuantiles)]=torch.max(cuantiles)
-    
+    # Ensure min/max operations return tensors on the correct device
+    min_val = torch.min(cuantiles).to(device)
+    max_val = torch.max(cuantiles).to(device)
+    serie = torch.clamp(serie, min_val, max_val)
+
     #Construimos el tensor con los datos codificados.
-    serie2input=torch.cat([serie.unsqueeze(0)] * snn_input_layer_neurons_size, dim=0)
-    
+    serie2input = torch.cat([serie.unsqueeze(0)] * snn_input_layer_neurons_size, dim=0).to(device)
+
     for i in range(snn_input_layer_neurons_size):
-        serie2input[i,:]=podar(serie2input[i,:],cuantiles[i],cuantiles[i+1])
-    
+        serie2input[i,:] = podar(serie2input[i,:], cuantiles[i].to(device), cuantiles[i+1].to(device))
+
     #Lo dividimos en función del tiempo de exposición T:
-    secuencias = torch.split(serie2input,T,dim=1)
-    
+    secuencias = torch.split(serie2input, T, dim=1)
+
     if is_train:
-        secuencias=secuencias[0:len(secuencias)-1]
-    
+        secuencias = secuencias[0:len(secuencias)-1]
+
     return secuencias
 
 
@@ -517,25 +520,29 @@ def crear_red(snn_input_layer_neurons_size, decaimiento, umbral, nu1, nu2, n, T,
         raise
 
 
-def ejecutar_red(secuencias, network, source_monitor, target_monitor, conv_monitor, T, 
+def ejecutar_red(secuencias, network, source_monitor, target_monitor, conv_monitor, T,
                 use_conv_layer=True, conv_processing_type='conv', device='cpu', conv_params=None):
     sp0, sp1, sp_conv = [], [], []
-    
+
     print('ejecutar_red')
     print(device)
+
+    # Ensure network is on the correct device
+    network = network.to(device)
+
     j = 1
     for i in secuencias:
         print(f'Ejecutando secuencia {j}')
         j += 1
-        
+
         inputs = {'A': i.T.to(device)}
         network.run(inputs=inputs, time=T)
-        
+
         spikes = {
             "X": source_monitor.get("s").to(device),
             "B": target_monitor.get("s").to(device)
         }
-        
+
         if use_conv_layer and conv_monitor is not None:
             spikes["C"] = conv_monitor.get("s").to(device)
         
@@ -647,7 +654,10 @@ def guardar_resultados(spikes, spikes_conv, data_test, n, snn_input_layer_neuron
 
     # Process layer B spikes
     spikes_1d = spikes.sum(axis=1) if len(spikes.shape) > 1 else spikes
-    binary_predictions_B = (spikes_1d > 0).astype(float)
+
+    # Find optimal threshold for layer B using F1 score optimization
+    optimal_threshold_B = find_optimal_threshold_f1(spikes_1d, ground_truth_labels)
+    binary_predictions_B = (spikes_1d > optimal_threshold_B).astype(float)
     predicted_anomalies_B = np.nan_to_num(binary_predictions_B, nan=0.0)
     
     # Enhanced metrics calculation for layer B
@@ -684,7 +694,10 @@ def guardar_resultados(spikes, spikes_conv, data_test, n, snn_input_layer_neuron
     if spikes_conv is not None:
         # Process layer C spikes in the same way as layer B
         spikes_conv_1d = spikes_conv.sum(axis=1) if len(spikes_conv.shape) > 1 else spikes_conv
-        binary_predictions_C = (spikes_conv_1d > 0).astype(float)
+
+        # Find optimal threshold for layer C using F1 score optimization
+        optimal_threshold_C = find_optimal_threshold_f1(spikes_conv_1d, ground_truth_labels)
+        binary_predictions_C = (spikes_conv_1d > optimal_threshold_C).astype(float)
         predicted_anomalies_C = np.nan_to_num(binary_predictions_C, nan=0.0)
         
         # Enhanced metrics calculation for layer C
@@ -843,19 +856,42 @@ def guardar_resultados(spikes, spikes_conv, data_test, n, snn_input_layer_neuron
     return mse_B, mse_C, f1_B, precision_B, recall_B, f1_C, precision_C, recall_C
 
 
+def find_optimal_threshold_f1(spikes_1d, ground_truth_labels, base_path=None):
+    """Find optimal threshold by maximizing F1 score"""
+    from sklearn.metrics import f1_score
+
+    # Generate range of potential thresholds
+    min_val, max_val = np.min(spikes_1d), np.max(spikes_1d)
+    if min_val == max_val:
+        return min_val  # All values are the same
+
+    thresholds = np.linspace(min_val, max_val, 100)
+    best_f1 = 0
+    best_threshold = min_val
+
+    for threshold in thresholds:
+        binary_pred = (spikes_1d > threshold).astype(float)
+        f1 = f1_score(ground_truth_labels, binary_pred, zero_division=0)
+        if f1 > best_f1:
+            best_f1 = f1
+            best_threshold = threshold
+
+    return best_threshold
+
+
 def find_optimal_threshold(spikes_1d, ground_truth_labels, base_path=None):
     from sklearn.metrics import roc_curve, roc_auc_score
-    
+
     # Calculate ROC curve
     fpr, tpr, thresholds = roc_curve(ground_truth_labels, spikes_1d)
-    
+
     # Calculate the geometric mean of sensitivity and specificity
     gmeans = np.sqrt(tpr * (1-fpr))
-    
+
     # Find the optimal threshold
     ix = np.argmax(gmeans)
     optimal_threshold = thresholds[ix]
-    
+
     # Plot ROC curve (optional)
     plt.figure(figsize=(8, 6))
     plt.plot(fpr, tpr, marker='.')
@@ -864,7 +900,7 @@ def find_optimal_threshold(spikes_1d, ground_truth_labels, base_path=None):
     plt.ylabel('True Positive Rate')
     plt.title(f'ROC Curve (Optimal Threshold = {optimal_threshold:.2f})')
     plt.savefig(f'{base_path}/roc_curve.png')
-    
+
     return optimal_threshold
 
 

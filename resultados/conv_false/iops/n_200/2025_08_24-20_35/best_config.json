@@ -1,0 +1,17 @@
+{
+    "best_params": {
+        "nu1": -0.24566210734564647,
+        "nu2": -0.05754762646044351,
+        "threshold": -64.71914389664339,
+        "decay": 81.78545804747782
+    },
+    "best_trial": 100,
+    "snn_process_layer_neurons_size": 200,
+    "device": "cpu",
+    "use_conv_layer": false,
+    "best_f1": 0.06086170533293161,
+    "amoumt_of_trials": 100,
+    "duration_seconds": 280.846406,
+    "start_time": "2025-08-24T20:35:28.483781",
+    "end_time": "2025-08-24T20:40:09.330187"
+}

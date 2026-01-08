@@ -1,0 +1,34 @@
+{
+    "trial_number": 58,
+    "error": "Trial failed during execution",
+    "parameters": {
+        "nu1": 0.7244219277098066,
+        "nu2": 0.6366560276514451,
+        "threshold": -49.812463470373935,
+        "decay": 150.80895089604434,
+        "kernel_type": "box",
+        "kernel_size": 5,
+        "sigma": 0.9451921401436806,
+        "norm_factor": 0.9673725846300913,
+        "exc_inh_balance": -0.18682489817986117,
+        "conv_processing_type": "max"
+    },
+    "conv_params": {
+        "kernel_type": "box",
+        "kernel_size": 5,
+        "sigma": 0.9451921401436806,
+        "norm_factor": 0.9673725846300913,
+        "exc_inh_balance": -0.18682489817986117
+    },
+    "conv_processing_type": "max",
+    "best_f1": 0.0,
+    "mse_B": null,
+    "mse_C": null,
+    "f1_B": null,
+    "precision_B": null,
+    "recall_B": null,
+    "f1_C": null,
+    "precision_C": null,
+    "recall_C": null,
+    "failure_reason": "Exception during experiment execution"
+}
